@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Manrope, system-ui, sans-serif;
+  color-scheme: light;
+}
+
+body {
+  @apply m-0 bg-mist text-slate-900 transition-colors duration-300 dark:bg-ink dark:text-slate-100;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.hero-grid {
+  background-size: 20px 20px;
+}
+
+.lamp-switch {
+  clip-path: polygon(20% 0, 80% 0, 100% 45%, 50% 100%, 0 45%);
+}
