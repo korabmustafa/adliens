@@ -154,8 +154,14 @@ responsive layouts, reduced motion, and error recovery.
 `/` is the cinematic agency landing page. **Enter our universe** opens `/universe`;
 `/work` remains a direct portfolio route. The film section shows honest coming-soon
 artwork until `VITE_AGENCY_FILM_URL` contains an HTTPS video URL. Set it in `.env`
-and rebuild Docker to enable the real video with native playback controls. There
-is no autoplay or forced wait before entering the universe.
+and rebuild Docker to enable the real video with native playback controls. There is no forced wait before entering the universe. The full-screen film starts muted when allowed, with manual playback for reduced-motion users.
 
 A custom SVG spaceship cursor is scoped to mouse users inside the star system.
 Touch input, text fields, and the flight-deck dialog retain standard behavior.
+
+The root entrance is now a standalone, fixed-viewport route **outside AppLayout**:
+no site header, footer, navigation, portfolio, or scrolling sections are mounted.
+It reserves the full screen for the future film. Configure `VITE_AGENCY_FILM_URL`
+with an HTTPS MP4 and rebuild to replace the atmospheric still. Playback starts
+muted when allowed, offers pause and sound controls, and stays manual for reduced
+motion. The enter link is always available, including when video loading fails.

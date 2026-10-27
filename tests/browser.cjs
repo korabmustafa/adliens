@@ -25,12 +25,23 @@ process.on("exit", () => server.kill());
   assert.ok(
     await page.getByRole("link", { name: "Enter our universe" }).isVisible(),
   );
-  assert.equal(await page.locator("#agency-film video").count(), 0);
+  assert.equal(await page.locator(".cinema-film").count(), 0);
+  assert.equal(
+    await page.locator(".site-header,.site-footer,.star-system").count(),
+    0,
+  );
+  assert.ok(
+    await page.evaluate(
+      () => document.documentElement.scrollHeight <= window.innerHeight,
+    ),
+  );
+  await page.screenshot({ path: "test-results/entrance.png" });
   await page.getByRole("link", { name: "Enter our universe" }).click();
   await page.goto("http://127.0.0.1:5173/universe", {
     waitUntil: "domcontentloaded",
   });
   await page.locator(".project-folder").first().waitFor();
+  assert.equal(await page.evaluate(() => document.body.style.overflow), "");
   await page.waitForTimeout(1100);
   await page.screenshot({
     path: "test-results/desktop.png",

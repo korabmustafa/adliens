@@ -1,87 +1,100 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WorldLink } from "../components/WorldLink";
-import { AlienMark } from "../components/Planet";
+
+// An isolated entrance: the site's layout is mounted only after entering.
 export function HomePage() {
   const film = useRef(null);
+  const entrance = useRef(null);
+  const [failed, setFailed] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  const [reduced, setReduced] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   const videoUrl = import.meta.env.VITE_AGENCY_FILM_URL;
-  const hasFilm = /^https:\/\//.test(videoUrl || "");
+  const hasFilm = /^https:\/\//.test(videoUrl || "") && !failed;
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    entrance.current?.focus({ preventScroll: true });
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const change = () => {
+      setReduced(preference.matches);
+      if (preference.matches) film.current?.pause();
+    };
+    preference.addEventListener("change", change);
+    return () => {
+      document.body.style.overflow = previous;
+      preference.removeEventListener("change", change);
+    };
+  }, []);
   return (
-    <div className="arrival-page">
-      <section className="arrival-stage">
-        <div className="arrival-grid" aria-hidden="true" />
-        <div className="arrival-eclipse" aria-hidden="true">
-          <span />
-          <AlienMark />
+    <main
+      ref={entrance}
+      tabIndex={-1}
+      className="cinema-entry"
+      aria-label="Welcome to Adliens"
+    >
+      {hasFilm ? (
+        <video
+          ref={film}
+          className="cinema-film"
+          src={videoUrl}
+          autoPlay={!reduced}
+          muted={muted}
+          loop
+          playsInline
+          preload="metadata"
+          aria-label="Adliens introduction film"
+          onError={() => setFailed(true)}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+        />
+      ) : (
+        <div className="cinema-still" aria-hidden="true">
+          <span className="cinema-halo" />
         </div>
-        <div className="arrival-coordinates">
-          TRANSMISSION FROM PLANET EARTH{" "}
-          <span>ADLIENS / INDEPENDENT CREATIVE AGENCY</span>
-        </div>
-        <div className="arrival-copy">
-          <p className="eyebrow">
-            FOR BRANDS THAT WERE NEVER MEANT TO BLEND IN
-          </p>
-          <h1>
-            Some brands exist.
-            <br />
-            <em>Others create worlds.</em>
-          </h1>
-          <p>
-            We’re Adliens. Strategy, design, and campaigns
-            <br />
-            with a gravitational pull of their own.
-          </p>
-          <div className="arrival-actions">
-            <WorldLink to="/universe" className="primary-button">
-              Enter our universe <span>↗</span>
-            </WorldLink>
-            <a href="#agency-film" className="film-link">
-              ◎ {hasFilm ? "Watch our story" : "Our story / Film coming soon"}{" "}
-              <span>↓</span>
-            </a>
-          </div>
-        </div>
-        <footer className="arrival-footer">
-          <span>ALIEN THINKING. HUMAN CONNECTION.</span>
-          <span>YOUR NEXT CHAPTER STARTS HERE ↓</span>
-        </footer>
-      </section>
-      <section id="agency-film" className="agency-film-section">
-        <p className="eyebrow">TRANSMISSION 001 / THE ADLIENS STORY</p>
-        <h2>
-          A little introduction.
-          <br />
-          <em>A different perspective.</em>
-        </h2>
-        <div className={`agency-film-frame ${hasFilm ? "has-film" : ""}`}>
-          {hasFilm ? (
-            <video
-              ref={film}
-              src={videoUrl}
-              controls
-              playsInline
-              preload="metadata"
-              aria-label="Introducing Adliens agency"
-            />
-          ) : (
-            <>
-              <div className="film-placeholder-mark">
-                <AlienMark />
-              </div>
-              <span className="film-timecode">ADLIENS / THE AGENCY FILM</span>
-              <div className="film-placeholder-copy">
-                <p>EVERY UNIVERSE HAS AN ORIGIN STORY.</p>
-                <h3>Ours is coming into focus.</h3>
-                <span>Agency introduction film · Coming soon</span>
-              </div>
-              <span className="film-corner">[ SIGNAL IN PRODUCTION ]</span>
-            </>
-          )}
-        </div>
-        <WorldLink to="/universe" className="text-link">
-          Until then, let the work introduce us. Enter the universe ↗
+      )}
+      <div className="cinema-shade" aria-hidden="true" />
+      <div className="cinema-signature" aria-hidden="true">
+        INDEPENDENT CREATIVE LIFE FORMS
+      </div>
+      <div className="cinema-identity">
+        <p>YOU ARE ENTERING A DIFFERENT WORLD</p>
+        <h1>
+          adliens<span>✳</span>
+        </h1>
+        <span className="cinema-tagline">
+          ALIEN THINKING. HUMAN CONNECTION.
+        </span>
+      </div>
+      <div className="cinema-enter">
+        <WorldLink to="/universe" className="cinema-enter-link">
+          Enter our universe <span>↗</span>
         </WorldLink>
-      </section>
-    </div>
+      </div>
+      {hasFilm && (
+        <div className="cinema-controls">
+          <button
+            onClick={() => {
+              if (film.current.paused)
+                film.current.play().catch(() => setPlaying(false));
+              else film.current.pause();
+            }}
+            aria-label={
+              playing ? "Pause introduction film" : "Play introduction film"
+            }
+          >
+            {playing ? "Ⅱ Pause film" : "▷ Play film"}
+          </button>
+          <button
+            onClick={() => setMuted(!muted)}
+            aria-label={muted ? "Enable film sound" : "Mute film sound"}
+          >
+            {muted ? "Sound off" : "Sound on"}
+          </button>
+        </div>
+      )}
+    </main>
   );
 }

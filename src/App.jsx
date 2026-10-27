@@ -17,8 +17,8 @@ import { UniversePage } from "./pages/UniversePage";
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<HomePage />} />
       <Route element={<AppLayout />}>
-        <Route index element={<HomePage />} />
         <Route path="universe" element={<UniversePage />} />
         <Route path="services" element={<ServicesPage />} />
         <Route path="work" element={<WorkPage />} />

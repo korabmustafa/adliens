@@ -2397,3 +2397,186 @@
     font-size: 8px;
   }
 }
+/* The entrance lives outside AppLayout and occupies exactly one viewport. */
+.cinema-entry {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  background: #020604;
+  color: #e8f0e3;
+  isolation: isolate;
+  overflow: hidden;
+  outline: none;
+}
+.cinema-film,
+.cinema-still,
+.cinema-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.cinema-film {
+  object-fit: cover;
+  z-index: -3;
+}
+.cinema-still {
+  z-index: -3;
+  background:
+    radial-gradient(ellipse at 50% 65%, #26442235, transparent 55%), #030806;
+}
+.cinema-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(65vw, 850px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 1px solid #b6e38219;
+  box-shadow:
+    0 0 130px #9af63808,
+    inset 0 0 100px #9af63806;
+}
+.cinema-halo:after {
+  content: "";
+  position: absolute;
+  inset: 13%;
+  border: 1px solid #b6e3820c;
+  border-radius: 50%;
+}
+.cinema-shade {
+  z-index: -2;
+  background:
+    linear-gradient(#0005, transparent 40%, #0009),
+    radial-gradient(ellipse, transparent, #0006);
+}
+.cinema-signature {
+  position: absolute;
+  top: max(35px, env(safe-area-inset-top));
+  left: 50%;
+  translate: -50% 0;
+  font: 8px monospace;
+  letter-spacing: 3px;
+  color: #8da380;
+  white-space: nowrap;
+}
+.cinema-identity {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 47%;
+  translate: 0 -50%;
+  text-align: center;
+}
+.cinema-identity > p {
+  font: 8px monospace;
+  letter-spacing: 4px;
+  color: #97b381;
+  margin-bottom: 25px;
+}
+.cinema-identity h1 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(70px, 15vw, 220px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.075em;
+  margin: 0;
+}
+.cinema-identity h1 > span {
+  color: #c5ff38;
+  display: inline-block;
+  font-size: 0.65em;
+  vertical-align: middle;
+  margin-left: 0.08em;
+  letter-spacing: 0;
+}
+.cinema-tagline {
+  display: block;
+  font: 8px monospace;
+  letter-spacing: 4px;
+  color: #778e69;
+  margin-top: 32px;
+}
+.cinema-enter {
+  position: absolute;
+  left: 50%;
+  bottom: 14%;
+  translate: -50% 0;
+  white-space: nowrap;
+}
+.cinema-enter-link {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  font: 11px monospace;
+  letter-spacing: 2px;
+  padding: 18px 24px;
+  border: 1px solid #c5ff3855;
+  border-radius: 2px;
+  color: #d3e7bc;
+  background: #101a0b60;
+  backdrop-filter: blur(8px);
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+}
+.cinema-enter-link:hover {
+  background: #c5ff3815;
+  border-color: #c5ff38;
+}
+.cinema-enter-link > span {
+  color: #c5ff38;
+  font-size: 20px;
+}
+.cinema-controls {
+  position: absolute;
+  bottom: max(25px, env(safe-area-inset-bottom));
+  right: 4%;
+  display: flex;
+  gap: 22px;
+}
+.cinema-controls button {
+  background: none;
+  border: 0;
+  padding: 10px;
+  font: 9px monospace;
+  color: #acbd9b;
+}
+.cinema-entry :focus-visible {
+  outline-color: #c5ff38;
+}
+@media (max-width: 760px) {
+  .cinema-signature {
+    font-size: 6px;
+    letter-spacing: 1.5px;
+    top: 30px;
+  }
+  .cinema-identity > p {
+    font-size: 6px;
+    letter-spacing: 2px;
+  }
+  .cinema-tagline {
+    font-size: 6px;
+    letter-spacing: 2px;
+    margin-top: 22px;
+  }
+  .cinema-halo {
+    width: 95vw;
+  }
+  .cinema-enter-link {
+    font-size: 9px;
+    padding: 14px 18px;
+    gap: 25px;
+  }
+  .cinema-controls {
+    left: 0;
+    right: 0;
+    justify-content: center;
+  }
+  .cinema-identity h1 {
+    font-size: 19vw;
+  }
+}
