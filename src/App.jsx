@@ -12,11 +12,14 @@ import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
 import { CaseStudiesAdminPage } from "./pages/admin/CaseStudiesAdminPage";
 import { CompaniesAdminPage } from "./pages/admin/CompaniesAdminPage";
 
+import { UniversePage } from "./pages/UniversePage";
+
 export default function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="universe" element={<UniversePage />} />
         <Route path="services" element={<ServicesPage />} />
         <Route path="work" element={<WorkPage />} />
         <Route path="work/:clientId" element={<ClientWorldPage />} />

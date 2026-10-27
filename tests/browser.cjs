@@ -21,7 +21,15 @@ process.on("exit", () => server.kill());
   const errors = [];
   await page.route("https://fonts.googleapis.com/**", (r) => r.abort());
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
+  await page.goto("http://127.0.0.1:5173/", { waitUntil: "domcontentloaded" });
+  assert.ok(
+    await page.getByRole("link", { name: "Enter our universe" }).isVisible(),
+  );
+  assert.equal(await page.locator("#agency-film video").count(), 0);
+  await page.getByRole("link", { name: "Enter our universe" }).click();
+  await page.goto("http://127.0.0.1:5173/universe", {
+    waitUntil: "domcontentloaded",
+  });
   await page.locator(".project-folder").first().waitFor();
   await page.waitForTimeout(1100);
   await page.screenshot({
@@ -72,6 +80,7 @@ process.on("exit", () => server.kill());
   for (const width of [390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const route of [
+      "/universe",
       "/",
       "/work",
       "/work/cmp-1",
@@ -90,7 +99,9 @@ process.on("exit", () => server.kill());
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
+  await page.goto("http://127.0.0.1:5173/universe", {
+    waitUntil: "domcontentloaded",
+  });
   await page.locator(".project-folder").first().waitFor();
   await page.waitForTimeout(1100);
   await page.screenshot({
@@ -132,7 +143,7 @@ process.on("exit", () => server.kill());
   await page.locator(".flight-result").first().click();
   await page.locator(".campaign-summary").waitFor();
   assert.ok(page.url().includes("/work/demo-nocturne?campaign="));
-  await page.goto("http://127.0.0.1:5173/");
+  await page.goto("http://127.0.0.1:5173/universe");
   await page.locator(".client-planet").first().waitFor();
   await page.getByRole("button", { name: "Scan the Adliens universe" }).click();
   assert.ok(

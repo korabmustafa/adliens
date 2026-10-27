@@ -148,3 +148,14 @@ without overwriting edited clients/campaigns. Subsequent deletions are preserved
 Particle animation suspends when offscreen or the tab is hidden. Run `npm test`
 for seed/migration tests and `npm run test:browser` for navigation, flight controls,
 responsive layouts, reduced motion, and error recovery.
+
+### Agency arrival and introduction film
+
+`/` is the cinematic agency landing page. **Enter our universe** opens `/universe`;
+`/work` remains a direct portfolio route. The film section shows honest coming-soon
+artwork until `VITE_AGENCY_FILM_URL` contains an HTTPS video URL. Set it in `.env`
+and rebuild Docker to enable the real video with native playback controls. There
+is no autoplay or forced wait before entering the universe.
+
+A custom SVG spaceship cursor is scoped to mouse users inside the star system.
+Touch input, text fields, and the flight-deck dialog retain standard behavior.

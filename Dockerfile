@@ -6,6 +6,8 @@ RUN npm ci --no-audit --no-fund
 COPY index.html vite.config.js tailwind.config.js postcss.config.js ./
 COPY src ./src
 # Vite variables are compiled into the browser bundle; they are not secrets.
+ARG VITE_AGENCY_FILM_URL=
+ENV VITE_AGENCY_FILM_URL=${VITE_AGENCY_FILM_URL}
 ARG VITE_USE_MOCK_DATA=true
 ARG VITE_API_BASE_URL=http://localhost:3000/api
 ENV VITE_USE_MOCK_DATA=${VITE_USE_MOCK_DATA} \
