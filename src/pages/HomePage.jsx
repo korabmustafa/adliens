@@ -27,7 +27,7 @@ export function HomePage() {
       };
     }
   }, []);
-  const videoUrl = siteFilm ?? import.meta.env.VITE_AGENCY_FILM_URL;
+  const videoUrl = siteFilm || import.meta.env.VITE_AGENCY_FILM_URL || "/adliens-intro.mp4";
   const hasFilm = isMediaUrl(videoUrl) && !failed;
   useEffect(() => {
     const previous = document.body.style.overflow;
