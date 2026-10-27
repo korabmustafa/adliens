@@ -23,14 +23,26 @@ process.on("exit", () => server.kill());
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
   await page.locator(".project-folder").first().waitFor();
-  await page.screenshot({ path: "test-results/desktop.png", fullPage: true });
-  assert.equal(await page.locator(".project-folder").count(), 2);
+  await page.waitForTimeout(1100);
+  await page.screenshot({
+    path: "test-results/desktop.png",
+    fullPage: true,
+  });
+  assert.equal(await page.locator(".project-folder").count(), 4);
   await page.getByRole("button", { name: "Pause motion" }).click();
   assert.equal(
     await page
       .locator(".star-system")
       .evaluate((e) => e.classList.contains("motion-paused")),
     true,
+  );
+  assert.ok(
+    await page
+      .locator(".client-planet")
+      .first()
+      .evaluate((e) =>
+        e.getAnimations().every((a) => a.playState === "paused"),
+      ),
   );
   await page.locator(".project-folder").first().click();
   await page.locator(".campaign-summary").waitFor();
@@ -40,19 +52,23 @@ process.on("exit", () => server.kill());
   assert.equal(await page.locator("dialog").evaluate((d) => d.open), false);
   await page.reload();
   await page.locator(".campaign-summary").waitFor();
-  await page.screenshot({ path: "test-results/client.png", fullPage: true });
+  await page.waitForTimeout(1100);
+  await page.screenshot({
+    path: "test-results/client.png",
+    fullPage: true,
+  });
   await page.goto("http://127.0.0.1:5173/work");
   await page.locator(".project-folder").first().waitFor();
   await page
     .getByRole("button", { name: "Social Media Advertising", exact: true })
     .click();
-  assert.equal(await page.locator(".project-folder").count(), 1);
+  assert.equal(await page.locator(".project-folder").count(), 4);
   await page
     .getByRole("button", { name: "All projects", exact: false })
     .click();
   assert.ok(await page.locator(".mission-index").isVisible());
   await page.getByRole("button", { name: "All work", exact: true }).click();
-  assert.equal(await page.locator(".project-folder").count(), 2);
+  assert.equal(await page.locator(".project-folder").count(), 24);
   for (const width of [390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     for (const route of [
@@ -76,7 +92,11 @@ process.on("exit", () => server.kill());
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
   await page.locator(".project-folder").first().waitFor();
-  await page.screenshot({ path: "test-results/mobile.png", fullPage: true });
+  await page.waitForTimeout(1100);
+  await page.screenshot({
+    path: "test-results/mobile.png",
+    fullPage: true,
+  });
   await page.getByRole("button", { name: "Menu +" }).click();
   await page
     .locator(".mobile-nav")
@@ -88,7 +108,11 @@ process.on("exit", () => server.kill());
     await page.locator("html").evaluate((e) => e.classList.contains("dark")),
     false,
   );
-  await page.screenshot({ path: "test-results/light.png", fullPage: true });
+  await page.waitForTimeout(1100);
+  await page.screenshot({
+    path: "test-results/light.png",
+    fullPage: true,
+  });
   await page.getByRole("button", { name: "Explore", exact: false }).click();
   await page.locator(".client-planet").first().waitFor();
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -99,10 +123,32 @@ process.on("exit", () => server.kill());
       .evaluate((e) => getComputedStyle(e).animationName),
     "none",
   );
-  // Exercise a collection larger than one orbital sector.
+  // Keyboard flight deck searches all campaigns and supports direct travel.
+  await page.keyboard.press("Control+k");
+  await page
+    .getByRole("textbox", { name: "Find a world or campaign" })
+    .fill("NOCTURNE");
+  assert.equal(await page.locator(".flight-result").count(), 2);
+  await page.locator(".flight-result").first().click();
+  await page.locator(".campaign-summary").waitFor();
+  assert.ok(page.url().includes("/work/demo-nocturne?campaign="));
+  await page.goto("http://127.0.0.1:5173/");
+  await page.locator(".client-planet").first().waitFor();
+  await page.getByRole("button", { name: "Scan the Adliens universe" }).click();
+  assert.ok(
+    await page
+      .locator(".star-system")
+      .evaluate((e) => e.classList.contains("is-scanning")),
+  );
+  await page.getByRole("button", { name: "Random jump" }).click();
+  await page.locator(".campaign-summary").waitFor();
+  assert.ok(page.url().includes("?campaign="));
+  // Exercise a partial final sector.
+  await page.goto("http://127.0.0.1:5173/work");
+  await page.locator(".client-planet").first().waitFor();
   await page.evaluate(() => {
     const db = JSON.parse(localStorage.getItem("adliens-admin-db-v1"));
-    for (let i = 0; i < 5; i++)
+    for (let i = 0; i < 1; i++)
       db.caseStudies.push({
         ...db.caseStudies[0],
         id: `test-${i}`,
@@ -114,10 +160,11 @@ process.on("exit", () => server.kill());
   await page.goto("http://127.0.0.1:5173/work");
   await page.locator(".client-planet").first().waitFor();
   assert.equal(await page.locator(".client-planet").count(), 4);
-  await page.getByRole("button", { name: "Next sector" }).click();
-  assert.equal(await page.locator(".client-planet").count(), 3);
+  await page.getByRole("button", { name: "Sector 4", exact: true }).click();
+  assert.equal(await page.locator(".client-planet").count(), 1);
   await page.getByRole("button", { name: "Previous sector" }).click();
   assert.equal(await page.locator(".client-planet").count(), 4);
+  await page.waitForTimeout(1100);
   await page.screenshot({
     path: "test-results/mobile-dense.png",
     fullPage: true,
@@ -130,10 +177,10 @@ process.on("exit", () => server.kill());
   await page.evaluate(() => localStorage.removeItem("adliens-admin-db-v1"));
   await page.getByRole("button", { name: "Reconnect" }).click();
   await page.locator(".client-planet").first().waitFor();
-  assert.equal(await page.locator(".client-planet").count(), 2);
+  assert.equal(await page.locator(".client-planet").count(), 4);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: planets, motion pause, deep links, dialog/Escape, filters, views, 18 responsive route checks, mobile menu, light theme, reduced motion, multi-sector collections, error recovery; no runtime errors",
+    "PASS: planets, motion pause, deep links, dialog/Escape, filters, views, 18 responsive route checks, mobile menu, light theme, reduced motion, multi-sector collections, error recovery, flight deck, random jumps, and scan interaction; no runtime errors",
   );
   await browser.close();
   server.kill();

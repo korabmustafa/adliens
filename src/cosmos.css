@@ -1381,3 +1381,744 @@
     width: 140px;
   }
 }
+/* Flight controls, transmissions, and a more tactile orbital scene. */
+.cosmic-particles {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.scanner-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 240px at var(--scanner-x, 50%) var(--scanner-y, 50%),
+    #97d6510c,
+    transparent 75%
+  );
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+.star-system:hover .scanner-glow {
+  opacity: 1;
+}
+.nebula-one {
+  animation: nebula-drift 35s ease-in-out infinite alternate;
+}
+.nebula-two {
+  animation: nebula-drift 40s ease-in-out infinite alternate-reverse;
+}
+.mothership {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  border-radius: 50%;
+  font: inherit;
+}
+.mothership:before,
+.mothership:after {
+  content: "";
+  position: absolute;
+  inset: 25px;
+  border: 1px solid #c5ff38;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.is-scanning .mothership:before {
+  animation: scanner-wave 1.8s ease-out both;
+}
+.is-scanning .mothership:after {
+  animation: scanner-wave 1.5s 0.3s ease-out both;
+}
+.is-scanning .signal-lines {
+  stroke: #c5ff38a0;
+  stroke-width: 1.4;
+}
+.is-scanning .planet-target {
+  opacity: 0.7;
+  transform: scale(1);
+}
+.scan-invitation {
+  display: block;
+  color: #a8cb84;
+  font: 7px monospace;
+  margin-top: 12px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+.mothership:hover .scan-invitation,
+.mothership:focus-visible .scan-invitation {
+  opacity: 1;
+  transform: none;
+}
+.mothership:hover .mothership-core {
+  box-shadow:
+    0 0 25px #c5ff3890,
+    0 0 100px #a9ff2940,
+    inset -10px -10px 25px #000;
+}
+.orbital-map {
+  animation: sector-arrival 0.9s cubic-bezier(0.15, 0.75, 0.2, 1) both;
+}
+.planet-satellite {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  border: 1px solid #c5ff3810;
+  animation: orbital-spin 22s linear infinite;
+  pointer-events: none;
+}
+.planet-satellite:after {
+  content: "";
+  position: absolute;
+  top: 15%;
+  left: 14%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #c9e5af;
+  box-shadow: 0 0 9px #c5ff38;
+}
+.celestial-1 .planet-satellite {
+  animation-duration: 31s;
+  animation-direction: reverse;
+}
+.celestial-2 .planet-satellite {
+  animation-duration: 27s;
+}
+.planet-atmosphere {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 25px #a2c67d0c;
+  pointer-events: none;
+  animation: atmosphere-breathe 7s ease-in-out infinite;
+}
+.client-planet .celestial-body {
+  animation: planet-materialize 0.85s ease-out both;
+}
+.client-planet:hover .planet-satellite,
+.client-planet:focus-visible .planet-satellite {
+  border-color: #c5ff3840;
+}
+.client-planet:hover .planet-label strong {
+  color: #c5ff38;
+}
+.planet-label {
+  animation: label-materialize 1s ease-out both;
+}
+.planet-label small {
+  letter-spacing: 1px;
+}
+.play-controls {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.random-jump {
+  font: 9px monospace;
+  letter-spacing: 0.6px;
+  padding: 5px;
+  border: 0;
+  color: #c0d8a9;
+  background: none;
+}
+.random-jump:hover {
+  color: #c5ff38;
+}
+.random-jump:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.flight-launch {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  border: 1px solid #c5ff3830;
+  background: #10190cb3;
+  color: #a9bd98;
+  font: 10px monospace;
+  padding: 11px 15px;
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 0.3s,
+    background 0.3s;
+}
+.flight-launch:hover {
+  border-color: #c5ff3880;
+  background: #192713;
+}
+.flight-launch kbd {
+  border: 1px solid #b9d99a30;
+  border-radius: 3px;
+  padding: 3px 5px;
+  color: #779366;
+  font: 8px monospace;
+}
+.system-controls {
+  gap: 13px;
+}
+.sector-navigation {
+  background: #111b0ce6;
+  border: 1px solid #c5ff3830;
+  padding: 5px;
+  border-radius: 28px;
+  backdrop-filter: blur(8px);
+  letter-spacing: 0;
+}
+.sector-navigation > button {
+  border: 0;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+.sector-choices {
+  display: flex;
+  gap: 4px;
+}
+.sector-choices button {
+  border: 0;
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  padding: 0;
+  font: 9px monospace;
+  color: #6d8960;
+  background: none;
+}
+.sector-choices button[aria-pressed="true"] {
+  background: #c5ff38;
+  color: #10200a;
+}
+.flight-deck {
+  width: min(680px, 92vw);
+  max-height: 85dvh;
+  border: 1px solid #b6e08455;
+  border-radius: 13px;
+  background: #0c140ef2;
+  color: #deead3;
+  padding: 23px;
+  box-shadow: 0 0 120px #97d84a13;
+  overflow: hidden;
+}
+.flight-deck::backdrop {
+  background: #030904dc;
+  backdrop-filter: blur(14px);
+}
+.flight-deck header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+.flight-deck .eyebrow {
+  font: 8px monospace;
+  letter-spacing: 1.5px;
+  margin: 0;
+  color: #9fc07f;
+}
+.flight-deck header > button {
+  font: 9px monospace;
+  border: 1px solid #c5ff3825;
+  color: #9aac8a;
+  background: none;
+  padding: 7px 9px;
+  border-radius: 4px;
+}
+.flight-search {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 25px 0 15px;
+  border-bottom: 1px solid #c5ff3830;
+}
+.flight-search > span:not(.sr-only) {
+  color: #c5ff38;
+  font-size: 29px;
+}
+.flight-search input {
+  width: 100%;
+  background: none;
+  border: 0;
+  outline: none;
+  color: #ecf7e3;
+  font:
+    17px "Space Grotesk",
+    sans-serif;
+  padding: 8px 3px;
+}
+.flight-search input::placeholder {
+  color: #5d7352;
+}
+.flight-search:focus-within {
+  border-bottom-color: #c5ff38;
+}
+.flight-results-count {
+  font: 8px monospace;
+  color: #738c64;
+  letter-spacing: 1px;
+  margin: 18px 0 9px;
+}
+.flight-results {
+  max-height: 47dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #4b682c transparent;
+  padding-right: 7px;
+}
+.flight-result {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  border-radius: 6px;
+  padding: 12px 9px;
+  border: 1px solid transparent;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.flight-result:hover,
+.flight-result:focus-visible {
+  background: #c5ff380b;
+  border-color: #c5ff3825;
+}
+.flight-result .celestial-body {
+  position: relative;
+  display: block;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+}
+.flight-result > span:nth-child(2) {
+  display: block;
+  flex: 1;
+}
+.flight-result small {
+  display: block;
+  color: #8ba975;
+  font: 7px monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.flight-result strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: "Space Grotesk", sans-serif;
+}
+.flight-result > span:last-child {
+  font-size: 18px;
+  color: #c5ff38;
+}
+.flight-deck footer {
+  padding-top: 20px;
+  border-top: 1px solid #c5ff3825;
+  margin-top: 13px;
+  display: flex;
+  gap: 20px;
+  font: 8px monospace;
+  color: #98b17f;
+}
+.flight-deck footer > span {
+  margin-left: auto;
+  color: #617a50;
+}
+.flight-empty {
+  font-size: 13px;
+  color: #8da37a;
+  padding: 30px 10px;
+}
+.campaign-layout {
+  animation: campaign-reveal 0.5s ease-out both;
+}
+.campaign-tabs button {
+  transition:
+    transform 0.25s,
+    background 0.25s;
+}
+.campaign-tabs button:hover {
+  transform: translateY(-2px);
+}
+.art-preview .art-object {
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.art-preview:hover .art-object {
+  transform: rotate(12deg) translateY(-10px) scale(1.05);
+}
+.art-preview:hover .art-star {
+  transform: rotate(60deg);
+}
+.art-star {
+  transition: transform 1s;
+}
+.art-2 .art-object {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #140d2d 28%,
+    #b58ef0 30%,
+    #3f2267 52%,
+    #d2b5ff 54%,
+    #3b245c 70%
+  );
+  width: 48%;
+  height: 48%;
+  top: 36%;
+  right: 5%;
+}
+.art-3 {
+  background: #f16d36;
+  color: #30231b;
+}
+.art-3 .art-object {
+  border-radius: 0;
+  transform: skewX(-22deg) rotate(-20deg);
+  background: repeating-linear-gradient(0deg, #e4ff6e 0 14%, #21321e 15% 25%);
+  right: 2%;
+  width: 48%;
+  height: 80%;
+}
+.art-3 .art-orbit {
+  inset: -30% -20%;
+  border-radius: 0;
+  border-color: #222b142a;
+  transform: rotate(-20deg);
+}
+.art-4 {
+  background: #e8e3d5;
+  color: #414638;
+}
+.art-4 .art-object {
+  width: 44%;
+  height: 74%;
+  right: 4%;
+  top: 28%;
+  border-radius: 50% 50% 0 0;
+  background: repeating-radial-gradient(
+    ellipse at 50% 100%,
+    #8b927b 0 4px,
+    #d8ddc7 5px 13px
+  );
+  box-shadow: 15px 20px 30px #535a3a30;
+  transform: rotate(8deg);
+}
+.art-5 {
+  background: #173e33;
+  color: #d6e5bb;
+}
+.art-5 .art-object {
+  clip-path: polygon(48% 0, 100% 100%, 0 100%);
+  border-radius: 0;
+  width: 65%;
+  height: 90%;
+  right: -10%;
+  top: 17%;
+  background: linear-gradient(120deg, #95b37b 20%, #526a3e 50%, #22352a 51%);
+  transform: rotate(12deg);
+}
+.art-5 .art-orbit {
+  border-color: #e4ffca30;
+}
+.art-6 {
+  background: #e9e55a;
+  color: #4a4d20;
+}
+.art-6 .art-object {
+  width: 55%;
+  height: 55%;
+  top: 35%;
+  right: -2%;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 5deg,
+    #ff903b 0 25deg,
+    #ffdc8640 26deg 30deg
+  );
+  border: 12px solid #ffb549;
+  box-shadow: 15px 20px 30px #89853540;
+}
+.art-7 {
+  background: #1c1f22;
+  color: #e6e6de;
+}
+.art-7 .art-object {
+  height: 80%;
+  width: 45%;
+  right: 2%;
+  top: 30%;
+  border-radius: 50% 50% 5px 5px;
+  background: linear-gradient(
+    110deg,
+    #282e35,
+    #b3bac2 40%,
+    #535d66 45%,
+    #171c21 70%
+  );
+  box-shadow: 15px 20px 30px #0008;
+  transform: rotate(-16deg);
+}
+.art-7 .art-orbit {
+  border-color: #ccd5df25;
+}
+.mission-row:hover .celestial-body {
+  transform: scale(1.09) rotate(-8deg);
+  transition: transform 0.4s;
+}
+.mission-row {
+  transition: padding 0.3s;
+}
+.mission-row:hover {
+  padding-left: 10px;
+}
+.motion-paused .scanner-glow {
+  display: none;
+}
+.motion-paused .mothership:before,
+.motion-paused .mothership:after {
+  display: none;
+}
+@keyframes scanner-wave {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(7);
+  }
+}
+@keyframes sector-arrival {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes planet-materialize {
+  from {
+    opacity: 0;
+    scale: 0.65;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    filter: blur(0);
+  }
+}
+@keyframes label-materialize {
+  0%,
+  40% {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes nebula-drift {
+  to {
+    translate: 70px 25px;
+    scale: 1.12;
+    opacity: 0.9;
+  }
+}
+@keyframes atmosphere-breathe {
+  50% {
+    box-shadow: 0 0 40px #a2c67d20;
+  }
+}
+@keyframes campaign-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 1000px) {
+  .flight-launch {
+    gap: 15px;
+    font-size: 9px;
+    padding: 10px 12px;
+  }
+  .play-controls {
+    gap: 5px;
+  }
+  .random-jump {
+    font-size: 8px;
+  }
+  .system-status {
+    font-size: 7px;
+    letter-spacing: 0.5px;
+  }
+}
+@media (max-width: 760px) {
+  .system-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .flight-launch {
+    grid-column: 1/-1;
+    width: 100%;
+    justify-content: space-between;
+    font-size: 10px;
+    padding: 12px 14px;
+  }
+  .system-controls > .view-switch {
+    justify-self: start;
+  }
+  .play-controls {
+    flex-direction: column;
+    align-items: end;
+    gap: 5px;
+  }
+  .random-jump {
+    font-size: 9px;
+  }
+  .orbit-control {
+    font-size: 8px;
+  }
+  .orbital-map {
+    top: 340px;
+  }
+  .cosmic-work .orbital-map,
+  .cosmic-work .dense-map {
+    top: 430px;
+  }
+  .star-system:has(.dense-map) {
+    min-height: 1350px;
+  }
+  .star-system:not(:has(.dense-map)) {
+    min-height: 1160px;
+  }
+  .scan-invitation {
+    opacity: 1;
+    transform: none;
+    font-size: 6px;
+  }
+  .sector-navigation {
+    bottom: 141px;
+    gap: 2px;
+    padding: 3px;
+  }
+  .sector-navigation > button {
+    width: 25px;
+    height: 25px;
+  }
+  .sector-choices button {
+    width: 23px;
+    height: 23px;
+    font-size: 8px;
+  }
+  .dense-map .undiscovered-world {
+    left: 29%;
+    top: 98%;
+  }
+  .undiscovered-world > span:nth-child(2) {
+    font-size: 5px;
+  }
+  .undiscovered-world strong {
+    font-size: 10px;
+  }
+  .flight-deck {
+    padding: 17px;
+  }
+  .flight-search input {
+    font-size: 14px;
+  }
+  .flight-deck .eyebrow {
+    font-size: 6px;
+    letter-spacing: 0.7px;
+  }
+  .flight-result {
+    gap: 12px;
+    padding: 12px 5px;
+  }
+  .flight-result strong {
+    font-size: 12px;
+  }
+  .flight-deck footer {
+    font-size: 7px;
+    gap: 15px;
+  }
+  .flight-deck footer > span {
+    display: none;
+  }
+  .mission-row:hover {
+    padding-left: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scanner-glow {
+    display: none;
+  }
+  .mothership:before,
+  .mothership:after {
+    display: none;
+  }
+  .client-planet .celestial-body,
+  .mission-row .celestial-body,
+  .art-preview .art-object {
+    transform: none !important;
+    scale: 1 !important;
+  }
+  .orbital-map {
+    filter: none !important;
+  }
+}
+.motion-paused .orbital-map,
+.motion-paused .client-planet .celestial-body,
+.motion-paused .planet-label {
+  animation: none !important;
+  opacity: 1;
+  filter: none;
+  scale: 1;
+  translate: none;
+}
+@media (min-width: 761px) {
+  .dense-map .undiscovered-world {
+    top: 22%;
+    left: 83%;
+  }
+}
+.project-art {
+  container-type: inline-size;
+}
+.project-art strong {
+  font-size: clamp(20px, 10cqi, 78px);
+  max-width: 86%;
+  letter-spacing: -0.05em;
+}
+.system-controls .view-switch button {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+@media (max-width: 760px) {
+  .system-controls > .view-switch {
+    width: max-content;
+  }
+}

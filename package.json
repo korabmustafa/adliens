@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test:browser": "node tests/browser.cjs",
-    "format:check": "prettier --check src/components/ProjectWorkspace.jsx src/pages/ClientWorldPage.jsx src/styles.css"
+    "format:check": "prettier --check src/components/ProjectWorkspace.jsx src/pages/ClientWorldPage.jsx src/styles.css",
+    "test": "node --test tests/demo-store.test.js"
   },
   "dependencies": {
     "react": "^18.3.1",

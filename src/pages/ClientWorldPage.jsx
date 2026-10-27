@@ -100,7 +100,7 @@ export function ClientWorldPage() {
           </button>
         ))}
       </div>
-      <section className="campaign-layout">
+      <section className="campaign-layout" key={selected.id}>
         <button
           className="art-preview"
           onClick={() => dialog.current.showModal()}

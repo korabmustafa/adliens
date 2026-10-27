@@ -131,3 +131,20 @@ Pointer parallax is mouse-only. Native View Transitions progressively enhance
 travel between worlds; ordinary links work on browsers without that API.
 The space scene stays dark in light mode to retain its visual identity.
 Planet textures are procedural SVG, with no external 3D library or image downloads.
+
+### Flight controls and demo collection
+
+The demo now includes **12 fictional client worlds and 24 campaigns** across three
+sectors. The additional concepts are labeled as samples, not real client work or
+verified outcomes. Existing browser collections receive the new concepts once,
+without overwriting edited clients/campaigns. Subsequent deletions are preserved.
+
+- Open **Jump anywhere** or press **Ctrl+K / Cmd+K** to search campaigns and services.
+- Use **Random jump** to explore a campaign directly.
+- Click the Adliens mothership to send a scan through the constellation.
+- Select a sector number or use its arrows to travel between collections.
+- **Pause motion** stops the scene; system reduced-motion preferences are respected.
+
+Particle animation suspends when offscreen or the tab is hidden. Run `npm test`
+for seed/migration tests and `npm run test:browser` for navigation, flight controls,
+responsive layouts, reduced motion, and error recovery.

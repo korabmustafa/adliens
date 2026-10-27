@@ -1,6 +1,20 @@
 import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 
+export function useWorldTravel() {
+  const navigate = useNavigate();
+  return (to, state) => {
+    if (
+      document.startViewTransition &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      document.startViewTransition(() =>
+        flushSync(() => navigate(to, { state })),
+      );
+    else navigate(to, { state });
+  };
+}
+
 // Keep ordinary links (including new tabs) while progressively enhancing travel.
 export function WorldLink({ to, state, children, onClick, ...props }) {
   const navigate = useNavigate();

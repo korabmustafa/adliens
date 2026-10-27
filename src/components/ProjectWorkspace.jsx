@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { AlienMark, Planet } from "./Planet";
-import { WorldLink } from "./WorldLink";
+import { Starfield } from "./Starfield";
+import { FlightDeck } from "./FlightDeck";
+import { WorldLink, useWorldTravel } from "./WorldLink";
 import { getCaseStudies } from "../api/endpoints";
 
 export function useProjects() {
@@ -46,12 +48,21 @@ export function ProjectArt({ project, variant = 0 }) {
       </div>
     );
   return (
-    <div className={`project-art art-${variant % 3}`} aria-hidden="true">
+    <div
+      className={`project-art art-${project.artTheme ?? variant % 8}`}
+      aria-hidden="true"
+    >
       <div className="art-orbit" />
       <div className="art-object" />
       <span className="art-caption">ADLIENS — CREATIVE EXPLORATIONS</span>
       <strong>
-        {variant % 2 === 0 ? (
+        {project.artTitle ? (
+          <>
+            {project.artTitle.split("|")[0]}
+            <br />
+            <em>{project.artTitle.split("|")[1]}</em>
+          </>
+        ) : variant % 2 === 0 ? (
           <>
             Beyond
             <br />
@@ -74,15 +85,9 @@ export function ProjectArt({ project, variant = 0 }) {
 const positions = [
   [23, 49],
   [78, 39],
-  [68, 78],
-  [38, 80],
+  [73, 75],
+  [34, 74],
 ];
-const stars = Array.from({ length: 85 }, (_, i) => ({
-  left: `${(i * 73.17) % 100}%`,
-  top: `${(i * 37.71) % 100}%`,
-  animationDelay: `${i % 9}s`,
-  opacity: 0.15 + (i % 6) / 10,
-}));
 
 export function ProjectWorkspace({ compact = false }) {
   const { projects, status, retry } = useProjects();
@@ -90,6 +95,11 @@ export function ProjectWorkspace({ compact = false }) {
   const [hovered, setHovered] = useState(null);
   const [paused, setPaused] = useState(false);
   const scene = useRef(null);
+  const [pulse, setPulse] = useState(0);
+  const [scanning, setScanning] = useState(false);
+  const scanTimer = useRef(null);
+  const travel = useWorldTravel();
+  useEffect(() => () => clearTimeout(scanTimer.current), []);
   const view = params.get("view") === "list" ? "list" : "explore";
   const filter = params.get("service") || "All work";
   const { pathname } = useLocation();
@@ -117,6 +127,10 @@ export function ProjectWorkspace({ compact = false }) {
   const sampleMode = import.meta.env.VITE_USE_MOCK_DATA !== "false";
   const active = worlds.find((p) => p.id === hovered);
   function change(key, value) {
+    if (key === "sector") {
+      setPulse((n) => n + 1);
+      setHovered(null);
+    }
     setParams(
       (prev) => {
         const next = new URLSearchParams(prev);
@@ -142,7 +156,7 @@ export function ProjectWorkspace({ compact = false }) {
   return (
     <section
       ref={scene}
-      className={`star-system ${compact ? "home-system" : ""} ${paused ? "motion-paused" : ""}`}
+      className={`star-system ${scanning ? "is-scanning" : ""} ${compact ? "home-system" : ""} ${paused ? "motion-paused" : ""}`}
       id="selected-work"
       aria-labelledby="work-heading"
       onPointerMove={(event) => {
@@ -153,6 +167,14 @@ export function ProjectWorkspace({ compact = false }) {
         )
           return;
         const rect = event.currentTarget.getBoundingClientRect();
+        scene.current.style.setProperty(
+          "--scanner-x",
+          `${((event.clientX - rect.left) / rect.width) * 100}%`,
+        );
+        scene.current.style.setProperty(
+          "--scanner-y",
+          `${((event.clientY - rect.top) / rect.height) * 100}%`,
+        );
         scene.current.style.setProperty(
           "--parallax-x",
           `${((event.clientX - rect.left) / rect.width - 0.5) * 14}px`,
@@ -167,11 +189,10 @@ export function ProjectWorkspace({ compact = false }) {
         scene.current.style.setProperty("--parallax-y", "0px");
       }}
     >
-      <div className="starfield" aria-hidden="true">
-        {stars.map((style, i) => (
-          <i key={i} style={style} />
-        ))}
+      <div className="starfield">
+        <Starfield paused={paused} pulse={pulse} />
       </div>
+      <div className="scanner-glow" aria-hidden="true" />
       <div className="nebula nebula-one" aria-hidden="true" />
       <div className="nebula nebula-two" aria-hidden="true" />
       <header className="system-intro">
@@ -190,6 +211,7 @@ export function ProjectWorkspace({ compact = false }) {
         </p>
       </header>
       <div className="system-controls">
+        <FlightDeck projects={projects} returnState={returnState} />
         <div className="view-switch" aria-label="Project view">
           <button
             aria-pressed={view === "explore"}
@@ -204,13 +226,26 @@ export function ProjectWorkspace({ compact = false }) {
             ☷ <span>All projects</span>
           </button>
         </div>
-        <button
-          className="orbit-control"
-          aria-pressed={paused}
-          onClick={() => setPaused(!paused)}
-        >
-          {paused ? "▷ Resume motion" : "Ⅱ Pause motion"}
-        </button>
+        <div className="play-controls">
+          <button
+            className="random-jump"
+            disabled={!projects.length}
+            onClick={() => {
+              const project =
+                projects[Math.floor(Math.random() * projects.length)];
+              travel(destination(project, true), returnState());
+            }}
+          >
+            ⤨ Random jump
+          </button>
+          <button
+            className="orbit-control"
+            aria-pressed={paused}
+            onClick={() => setPaused(!paused)}
+          >
+            {paused ? "▷ Resume motion" : "Ⅱ Pause motion"}
+          </button>
+        </div>
       </div>
       {!compact && (
         <div className="filters system-filters" aria-label="Filter by service">
@@ -241,6 +276,7 @@ export function ProjectWorkspace({ compact = false }) {
       {status === "success" &&
         (view === "explore" ? (
           <div
+            key={`${sector}:${filter}`}
             className={`orbital-map ${visible.length > 2 ? "dense-map" : ""}`}
             aria-label="Adliens client star system"
           >
@@ -260,9 +296,16 @@ export function ProjectWorkspace({ compact = false }) {
                 className="signal-lines"
               />
             </svg>
-            <div
+            <button
+              type="button"
+              onClick={() => {
+                clearTimeout(scanTimer.current);
+                setScanning(true);
+                setPulse((n) => n + 1);
+                scanTimer.current = setTimeout(() => setScanning(false), 1800);
+              }}
               className="mothership"
-              aria-label="Adliens, the creative force at the center"
+              aria-label="Scan the Adliens universe"
             >
               <div className="sun-corona" />
               <div className="sun-orbit" />
@@ -271,9 +314,14 @@ export function ProjectWorkspace({ compact = false }) {
               </div>
               <div className="mothership-caption">
                 <strong>ADLIENS</strong>
-                <span>THE CREATIVE MOTHERSHIP</span>
+                <span>
+                  {scanning
+                    ? "SCANNING / SIGNALS DETECTED"
+                    : "THE CREATIVE MOTHERSHIP"}
+                </span>
+                <small className="scan-invitation">Click to scan ↗</small>
               </div>
-            </div>
+            </button>
             {visible.map((p, i) => {
               const index = sector * positions.length + i;
               return (
@@ -294,6 +342,8 @@ export function ProjectWorkspace({ compact = false }) {
                   aria-label={`Enter ${p.companyName} world, ${campaignCount(p)} campaigns`}
                 >
                   <span className="planet-target" />
+                  <span className="planet-satellite" aria-hidden="true" />
+                  <span className="planet-atmosphere" aria-hidden="true" />
                   <Planet variant={index} imageUrl={p.imageUrl} />
                   <span className="planet-label">
                     <small>
@@ -398,9 +448,18 @@ export function ProjectWorkspace({ compact = false }) {
             >
               ←
             </button>
-            <span>
-              SECTOR {sector + 1} / {sectors}
-            </span>
+            <div className="sector-choices" aria-label="Choose a sector">
+              {Array.from({ length: sectors }, (_, i) => (
+                <button
+                  key={i}
+                  aria-label={`Sector ${i + 1}`}
+                  aria-pressed={i === sector}
+                  onClick={() => change("sector", i)}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </button>
+              ))}
+            </div>
             <button
               onClick={() => change("sector", sector + 1)}
               disabled={sector === sectors - 1}
