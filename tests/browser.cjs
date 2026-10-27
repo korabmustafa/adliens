@@ -23,9 +23,29 @@ process.on("exit", () => server.kill());
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("http://127.0.0.1:5173/", { waitUntil: "domcontentloaded" });
   assert.ok(
-    await page.getByRole("link", { name: "Enter our universe" }).isVisible(),
+    await page.getByRole("link", { name: /Skip intro|Enter our universe/ }).isVisible(),
   );
-  assert.equal(await page.locator(".cinema-film").count(), 0);
+  assert.equal(await page.locator(".cinema-film").count(), 1);
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.reload();
+    const video = page.locator(".cinema-film");
+    await page.waitForFunction(() => document.querySelector("video")?.currentTime > 0);
+    assert.equal(await video.evaluate((v) => v.loop), false);
+    assert.equal(await video.evaluate((v) => getComputedStyle(v).objectFit), "contain");
+    assert.equal(await page.locator(".cinema-identity,.cinema-shade").count(), 0);
+    await page.screenshot({ path: `test-results/film-${width}.png` });
+    // Reach the real end event; confirm the player stays at the closing frame.
+    await video.evaluate((v) => { v.currentTime = v.duration - 0.25; });
+    await page.getByRole("link", { name: "Enter our universe" }).waitFor();
+    assert.equal(await video.evaluate((v) => v.ended && v.paused), true);
+    const closing = page.locator(".cinema-closing");
+    assert.equal(await closing.evaluate((img) => img.complete && img.naturalWidth > 0), true);
+    await page.waitForTimeout(600);
+    assert.equal(await video.evaluate((v) => v.ended && v.paused), true);
+    await page.screenshot({ path: `test-results/film-ended-${width}.png` });
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
   assert.equal(
     await page.locator(".site-header,.site-footer,.star-system").count(),
     0,

@@ -2397,186 +2397,110 @@
     font-size: 8px;
   }
 }
-/* The entrance lives outside AppLayout and occupies exactly one viewport. */
+/* A contained film: keep every frame visible, including in portrait. */
 .cinema-entry {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100dvh;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
   background: #020604;
   color: #e8f0e3;
   isolation: isolate;
   overflow: hidden;
   outline: none;
 }
+.cinema-screen {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
 .cinema-film,
-.cinema-still,
-.cinema-shade {
+.cinema-closing {
+  display: block;
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.cinema-closing {
   pointer-events: none;
 }
-.cinema-film {
-  object-fit: cover;
-  z-index: -3;
+.cinema-fallback {
+  height: 100%;
+  display: grid;
+  place-items: center;
 }
-.cinema-still {
-  z-index: -3;
-  background:
-    radial-gradient(ellipse at 50% 65%, #26442235, transparent 55%), #030806;
+.cinema-fallback h1 {
+  font-size: clamp(48px, 12vw, 180px);
+  letter-spacing: -0.065em;
 }
-.cinema-halo {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(65vw, 850px);
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  border-radius: 50%;
-  border: 1px solid #b6e38219;
-  box-shadow:
-    0 0 130px #9af63808,
-    inset 0 0 100px #9af63806;
-}
-.cinema-halo:after {
-  content: "";
-  position: absolute;
-  inset: 13%;
-  border: 1px solid #b6e3820c;
-  border-radius: 50%;
-}
-.cinema-shade {
-  z-index: -2;
-  background:
-    linear-gradient(#0005, transparent 40%, #0009),
-    radial-gradient(ellipse, transparent, #0006);
-}
-.cinema-signature {
-  position: absolute;
-  top: max(35px, env(safe-area-inset-top));
-  left: 50%;
-  translate: -50% 0;
-  font: 8px monospace;
-  letter-spacing: 3px;
-  color: #8da380;
-  white-space: nowrap;
-}
-.cinema-identity {
-  position: absolute;
-  left: 5%;
-  right: 5%;
-  top: 47%;
-  translate: 0 -50%;
-  text-align: center;
-}
-.cinema-identity > p {
-  font: 8px monospace;
-  letter-spacing: 4px;
-  color: #97b381;
-  margin-bottom: 25px;
-}
-.cinema-identity h1 {
-  font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(70px, 15vw, 220px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.075em;
-  margin: 0;
-}
-.cinema-identity h1 > span {
+.cinema-fallback span {
   color: #c5ff38;
-  display: inline-block;
-  font-size: 0.65em;
-  vertical-align: middle;
-  margin-left: 0.08em;
-  letter-spacing: 0;
 }
-.cinema-tagline {
-  display: block;
-  font: 8px monospace;
-  letter-spacing: 4px;
-  color: #778e69;
-  margin-top: 32px;
-}
-.cinema-enter {
-  position: absolute;
-  left: 50%;
-  bottom: 14%;
-  translate: -50% 0;
-  white-space: nowrap;
+.cinema-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px max(24px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
 }
 .cinema-enter-link {
-  display: flex;
-  gap: 40px;
+  display: inline-flex;
   align-items: center;
-  font: 11px monospace;
-  letter-spacing: 2px;
-  padding: 18px 24px;
-  border: 1px solid #c5ff3855;
-  border-radius: 2px;
-  color: #d3e7bc;
-  background: #101a0b60;
-  backdrop-filter: blur(8px);
-  transition:
-    background 0.3s,
-    border-color 0.3s;
+  gap: 20px;
+  min-height: 44px;
+  font: 12px monospace;
+  letter-spacing: 1px;
+  color: #e8f0e3;
 }
-.cinema-enter-link:hover {
-  background: #c5ff3815;
-  border-color: #c5ff38;
-}
-.cinema-enter-link > span {
+.cinema-enter-link span {
   color: #c5ff38;
   font-size: 20px;
 }
 .cinema-controls {
-  position: absolute;
-  bottom: max(25px, env(safe-area-inset-bottom));
-  right: 4%;
   display: flex;
-  gap: 22px;
+  gap: 8px;
 }
-.cinema-controls button {
-  background: none;
-  border: 0;
-  padding: 10px;
-  font: 9px monospace;
-  color: #acbd9b;
+.cinema-controls button,
+.cinema-start {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #c5ff3833;
+  border-radius: 30px;
+  background: #071009;
+  color: #c5d3bb;
+  font: 11px monospace;
+}
+.cinema-start {
+  position: absolute;
+  left: 50%;
+  top: 75%;
+  translate: -50% -50%;
 }
 .cinema-entry :focus-visible {
-  outline-color: #c5ff38;
+  outline: 2px solid #c5ff38;
+  outline-offset: 4px;
 }
 @media (max-width: 760px) {
-  .cinema-signature {
-    font-size: 6px;
-    letter-spacing: 1.5px;
-    top: 30px;
-  }
-  .cinema-identity > p {
-    font-size: 6px;
-    letter-spacing: 2px;
-  }
-  .cinema-tagline {
-    font-size: 6px;
-    letter-spacing: 2px;
-    margin-top: 22px;
-  }
-  .cinema-halo {
-    width: 95vw;
+  .cinema-footer {
+    padding-left: 18px;
+    padding-right: 18px;
+    gap: 8px;
   }
   .cinema-enter-link {
-    font-size: 9px;
-    padding: 14px 18px;
-    gap: 25px;
+    font-size: 11px;
+    gap: 12px;
+    letter-spacing: 0;
   }
   .cinema-controls {
-    left: 0;
-    right: 0;
-    justify-content: center;
+    gap: 6px;
   }
-  .cinema-identity h1 {
-    font-size: 19vw;
+  .cinema-controls button {
+    padding: 10px 12px;
   }
 }
