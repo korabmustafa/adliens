@@ -1567,3 +1567,95 @@ h1 .hero-asterisk {
   display: inline-flex;
   align-items: center;
 }
+.contact-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.media-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px dashed var(--line);
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.media-upload input {
+  max-width: 100%;
+  font-size: 11px;
+}
+.media-upload small[role="alert"] {
+  color: #ee8790;
+}
+.admin-panel h1 {
+  font-size: 40px;
+  letter-spacing: -2px;
+  font-weight: 500;
+}
+.admin-panel h2 {
+  font-size: 23px;
+  letter-spacing: -1px;
+}
+.admin-panel > p,
+.admin-panel form > p {
+  font-size: 13px;
+  color: var(--muted);
+}
+.admin-panel form,
+.inquiry-list article {
+  border: 1px solid var(--line);
+  padding: 25px;
+  border-radius: 12px;
+  margin: 25px 0;
+  max-width: 850px;
+}
+.admin-panel label {
+  display: block;
+  font-size: 12px;
+  margin: 15px 0;
+}
+.admin-panel input,
+.admin-panel select {
+  display: block;
+  margin-top: 8px;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: 5px;
+  color: var(--text);
+}
+.admin-panel button {
+  border: 1px solid var(--line);
+  padding: 10px 16px;
+  border-radius: 5px;
+  color: var(--lime);
+  font-size: 12px;
+}
+.admin-panel button:disabled {
+  opacity: 0.5;
+}
+.inquiry-list article > p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 20px 0;
+}
+.inquiry-list small {
+  font: 10px monospace;
+  color: var(--muted);
+}
+.inquiry-list h2 {
+  margin: 12px 0;
+}
+.inquiry-list a {
+  color: var(--lime);
+  font-size: 13px;
+}
+.inquiry-list select {
+  max-width: 200px;
+}

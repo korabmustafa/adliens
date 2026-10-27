@@ -7,6 +7,7 @@ const initialForm = {
   email: "",
   company: "",
   message: "",
+  website: "",
 };
 
 export function ContactPage() {
@@ -66,6 +67,16 @@ export function ContactPage() {
           onSubmit={onSubmit}
           className="space-y-4 rounded-2xl border border-slate-300 p-6 dark:border-neon/25"
         >
+          <label className="contact-trap" aria-hidden="true">
+            Website
+            <input
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.website}
+              onChange={onChange}
+            />
+          </label>
           <div className="grid gap-4 md:grid-cols-2">
             {[
               ["name", "Name"],

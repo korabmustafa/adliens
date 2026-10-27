@@ -1,167 +1,113 @@
 # Adliens — Client Universe
 
-A React + Vite marketing agency portfolio centered on client work:
+React/Vite marketing-agency portfolio with a standalone cinematic entrance,
+interactive client planets, flight-deck search, and campaign worlds.
 
-- Interactive client planets around the Adliens mothership
-- Campaign artwork and video viewers
-- Star-system exploration, campaign index, and service filters
-- Dark lime theme, light mode, and mobile navigation
-- Case study admin with local demo data and API integration scaffold
+## Production backend
 
-## Try locally with Docker (Windows / macOS / Linux)
+The frontend and a Node.js Vercel Function deploy together. PostgreSQL is provided
+by the dedicated `adliens-database` Neon integration. Better Auth manages passwords,
+HttpOnly cookie sessions, sign-out, password changes, and database-backed login
+rate limits. There is no public registration endpoint.
 
-Start Docker Desktop with Linux containers enabled. From this project folder:
+- `/` — isolated cinematic entrance; `/universe` and `/work` — published portfolio.
+- `/admin/login` — administrator sign-in.
+- `/admin/companies` — represented clients; deactivation hides their public work.
+- `/admin/work` — drafts, published campaigns, and media uploads.
+- `/admin/inquiries` — persisted contact submissions; mark read or archive.
+- `/admin/settings` — introduction film and password changes.
+- `/api/health` — database connectivity check.
+
+Admin mutations are authorized on the server, validated, and use parameterized
+queries. Contact submissions use a honeypot and persistent per-source rate limits.
+Inquiries are saved in the inbox; email notifications are not configured.
+
+Media is held in the private `adliens-media` Blob store. Only authenticated admins
+can upload. A `/api/media/:id` route checks publication or the admin session before
+issuing short-lived, object-scoped access. Draft images/video are not anonymous
+assets. Uploaded media used by a published campaign or saved as the agency film
+is intentionally visible to website visitors. No permanent public bucket is used.
+
+The production database currently includes 12 demo clients and 24 sample campaigns,
+clearly marked as concepts. They are central database records, not browser-local
+fallbacks. Real work can be added through admin; preserve or clear its demo flag
+as appropriate. Local browser demo edits are not automatically uploaded to production.
+
+## Deployment
+
+Vercel project: `km-93ea/adliens`. Production is configured with
+`VITE_USE_MOCK_DATA=false` and `VITE_API_BASE_URL=/api`. Neon and Blob secrets are
+server-only project environment variables. Never use `VITE_` for secrets.
+
+`vercel.json` routes API requests to the backend and keeps SPA deep links working.
+The GitHub repository is not automatically connected to Vercel; current releases
+are direct source deployments. A Git push alone does not publish a new release.
+
+After project linking and environment provisioning, use Vercel CLI to deploy:
+
+```bash
+vercel link --project adliens --scope km-93ea
+vercel --prod
+```
+
+## Local visual preview with Docker Desktop
+
+From the project folder, with Docker Desktop running Linux containers:
 
 ```powershell
+$env:ADLIENS_PORT = "8081"
 docker compose up --build -d
 ```
 
-Open **http://localhost:8080**. No local Node.js installation, database, or `.env`
-file is needed. The first build downloads dependencies; later builds reuse layers.
-The port is bound to your own computer only.
-
-Useful commands:
+Open http://localhost:8081. The default Docker configuration serves a static,
+local mock-data preview; it does not run the PostgreSQL backend. Demo admin accepts
+any email/nonempty password only in this local mock mode. Browser demo edits persist
+in localStorage for that origin. Rebuild after source changes; no hot reload.
 
 ```powershell
-# Show startup / health status
-docker compose ps
-# Follow web server logs (Ctrl+C stops following, not the container)
 docker compose logs -f web
-# Rebuild after changing the frontend
-docker compose up --build -d
-# Stop and remove the local container
 docker compose down
 ```
 
-Test the homepage, `/work`, and a direct client URL such as
-http://localhost:8080/work/cmp-1. Refreshing a client URL should still work.
-The `/healthz` endpoint returns `ok` and is used by the container health check.
+## Full backend development
 
-### Optional configuration
-
-If port 8080 is occupied, create the optional `.env` in PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-notepad .env
-```
-
-Set `ADLIENS_PORT=8081`, then run `docker compose up --build -d` and open
-http://localhost:8081. Keep `.env` local. `VITE_*` settings are build-time values;
-always rebuild after changing them. They are public browser configuration, not secrets.
-
-### Demo data and contact form
-
-Client worlds and admin use sample data saved in **your browser's localStorage**.
-Try `/admin/login` with any email and nonempty password in this mock mode. This is
-only a frontend demo, not production authentication. Publish a case study in
-`/admin/work` to see it in the public workspace in the same browser.
-
-There is no backend in this repository or Docker setup. The contact form displays
-an error until a real backend is connected; Docker does not enable email delivery.
-`VITE_API_BASE_URL` must be an address reachable by your browser. Stopping Docker
-does not erase browser data; changing the port creates a separate browser origin
-and therefore a separate demo collection. Clear site data to reset the samples.
-
-Docker serves the built site without hot reload. For live frontend editing use
-Node.js 22 and the development commands below instead.
-
-## Develop without Docker
+Use Node.js 22.9+ or 24 and a separate development PostgreSQL database. Copy
+`.env.example` to `.env.local`, supply its server-only values, configure
+`VITE_USE_MOCK_DATA=false`, and set `APP_ORIGIN` to the actual local server origin.
+Use a separate development Blob store, not production secrets.
 
 ```bash
 npm ci
-npm run dev -- --host 127.0.0.1
+npm run db:setup
+vercel dev
 ```
 
-Published case studies from admin are shown in public `/work`.
+`db:setup` is an explicit, one-time owner command. Provide a password of at least
+12 characters through the private environment file; optionally set `SEED_DEMO=true`.
+The production database is already initialized. No public HTTP setup endpoint is
+included in the finished deployment. For future Better Auth schema upgrades run
+`npm run db:migrate` against the intended environment before releasing that upgrade.
+Never run setup or migrations against an unrelated project database.
 
-## Backend integration (NestJS target endpoints)
+## Film and media
 
-- `POST /auth/login`
-- `GET/POST/PATCH/DELETE /admin/companies`
-- `GET/POST/PATCH/DELETE /admin/case-studies`
-- `GET /case-studies?status=published`
+The introduction film can be uploaded or linked from `/admin/settings`; saving
+it publishes it to the entrance. Native playback controls support pause and sound;
+reduced-motion visitors start playback manually. Without a film, the entrance
+shows atmospheric artwork. The enter link always remains available.
 
-## Client universe redesign
+## Verification
 
-The public site now centers on published client work: an interactive star map, service filters,
-Explore / All Projects views, client worlds at `/work/:companyId`, and campaign links
-at `/work/:companyId?campaign=:caseStudyId`. Entering and leaving a world preserves the
-workspace view and filters; the close link also restores its scroll position.
+```bash
+npm test
+npm run lint
+npm run build
+npx playwright install chromium
+npm run test:browser
+```
 
-Case studies can include `challenge`, `approach`, `imageUrl` (HTTPS image), and
-`videoUrl` (HTTPS MP4). These fields are editable in the case study admin. Images
-appear on client planets and in the campaign viewer; videos use native playback
-controls with no autoplay. Without an image, the site shows concept artwork.
-The existing mock collection is explicitly labeled as demo content.
+The browser suite exercises the local demo. Production verification additionally
+covers real sign-in, blocked registration/anonymous admin access, CRUD, draft/public
+visibility, inquiries, settings, and private-versus-published media access.
 
-The default remains mock data stored in the visitor's browser. An actual API must
-support the new optional fields when `VITE_USE_MOCK_DATA=false`. Contact submissions
-still require the configured `POST /leads` backend; the frontend reports failures
-and does not pretend to send messages locally. No backend is included in this repo.
-
-### Hosting
-
-Configure the host to serve `index.html` for application routes so client-world
-links work when opened directly. Static assets should retain their normal handling.
-
-### Accessibility and motion
-
-Keyboard-accessible links and controls, native modal focus management and Escape
-handling, a mobile menu, light/dark themes, and reduced-motion CSS are included.
-The redesign uses CSS artwork and animations rather than adding a 3D runtime.
-
-### Verification
-
-Run `npm run lint` and `npm run build`. For the browser smoke suite, run
-`npx playwright install chromium`, then `npm run test:browser`. It starts a local
-Vite server and covers planet navigation, direct campaign URLs, viewer dismissal,
-filters, view switching, all public routes at three widths, mobile navigation,
-theme switching, and reduced motion. Screenshots go to ignored `test-results/`.
-
-### Star-system experience
-
-The landing page is an interactive universe: Adliens at the center, with published
-clients represented as textured planets. Hover or keyboard-focus a planet to
-identify the work, then enter its case study. The All Projects index provides
-a direct route to each campaign. Collections over four clients split into sectors.
-
-Motion can be paused from the map and respects the system reduced-motion setting.
-Pointer parallax is mouse-only. Native View Transitions progressively enhance
-travel between worlds; ordinary links work on browsers without that API.
-The space scene stays dark in light mode to retain its visual identity.
-Planet textures are procedural SVG, with no external 3D library or image downloads.
-
-### Flight controls and demo collection
-
-The demo now includes **12 fictional client worlds and 24 campaigns** across three
-sectors. The additional concepts are labeled as samples, not real client work or
-verified outcomes. Existing browser collections receive the new concepts once,
-without overwriting edited clients/campaigns. Subsequent deletions are preserved.
-
-- Open **Jump anywhere** or press **Ctrl+K / Cmd+K** to search campaigns and services.
-- Use **Random jump** to explore a campaign directly.
-- Click the Adliens mothership to send a scan through the constellation.
-- Select a sector number or use its arrows to travel between collections.
-- **Pause motion** stops the scene; system reduced-motion preferences are respected.
-
-Particle animation suspends when offscreen or the tab is hidden. Run `npm test`
-for seed/migration tests and `npm run test:browser` for navigation, flight controls,
-responsive layouts, reduced motion, and error recovery.
-
-### Agency arrival and introduction film
-
-`/` is the cinematic agency landing page. **Enter our universe** opens `/universe`;
-`/work` remains a direct portfolio route. The film section shows honest coming-soon
-artwork until `VITE_AGENCY_FILM_URL` contains an HTTPS video URL. Set it in `.env`
-and rebuild Docker to enable the real video with native playback controls. There is no forced wait before entering the universe. The full-screen film starts muted when allowed, with manual playback for reduced-motion users.
-
-A custom SVG spaceship cursor is scoped to mouse users inside the star system.
-Touch input, text fields, and the flight-deck dialog retain standard behavior.
-
-The root entrance is now a standalone, fixed-viewport route **outside AppLayout**:
-no site header, footer, navigation, portfolio, or scrolling sections are mounted.
-It reserves the full screen for the future film. Configure `VITE_AGENCY_FILM_URL`
-with an HTTPS MP4 and rebuild to replace the atmospheric still. Playback starts
-muted when allowed, offers pause and sound controls, and stays manual for reduced
-motion. The enter link is always available, including when video loading fails.
+All credentials, session cookies, and `.vercel` state must remain outside Git.

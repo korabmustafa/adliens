@@ -1,30 +1,15 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
-
-function getAuthToken() {
-  const raw = localStorage.getItem('adliens-admin-auth');
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw)?.token || null;
-  } catch {
-    return null;
-  }
-}
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 export async function apiRequest(path, options = {}) {
-  const token = getAuthToken();
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
     ...options,
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
   });
-
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+    if (response.status === 401 && !path.startsWith("/auth/sign-in"))
+      window.dispatchEvent(new Event("adliens:session-expired"));
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.error || `Request failed (${response.status})`);
   }
-
-  if (response.status === 204) return null;
-  return response.json();
+  return response.status === 204 ? null : response.json();
 }

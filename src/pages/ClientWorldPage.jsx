@@ -1,3 +1,4 @@
+import { isMediaUrl } from "../api/media";
 import { useEffect, useRef } from "react";
 import {
   Link,
@@ -21,9 +22,10 @@ export function ClientWorldPage() {
     0,
     projects.findIndex((p) => p.id === selected?.id),
   );
-  const hasVideo = /^https:\/\//.test(selected?.videoUrl || "");
-  const hasImage = /^https:\/\//.test(selected?.imageUrl || "");
-  const sample = import.meta.env.VITE_USE_MOCK_DATA !== "false";
+  const hasVideo = isMediaUrl(selected?.videoUrl);
+  const hasImage = isMediaUrl(selected?.imageUrl);
+  const sample =
+    !!selected?.isDemo || import.meta.env.VITE_USE_MOCK_DATA !== "false";
   useEffect(() => {
     if (selected) document.title = `${selected.companyName} — Adliens`;
     return () => {

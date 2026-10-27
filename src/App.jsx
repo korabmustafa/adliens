@@ -1,3 +1,5 @@
+import { LeadsAdminPage } from "./pages/admin/LeadsAdminPage";
+import { SettingsAdminPage } from "./pages/admin/SettingsAdminPage";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./admin/ProtectedRoute";
 import { AppLayout } from "./layout/AppLayout";
@@ -38,6 +40,8 @@ export default function App() {
         }
       >
         <Route index element={<Navigate to="companies" replace />} />
+        <Route path="inquiries" element={<LeadsAdminPage />} />
+        <Route path="settings" element={<SettingsAdminPage />} />
         <Route path="companies" element={<CompaniesAdminPage />} />
         <Route path="work" element={<CaseStudiesAdminPage />} />
       </Route>

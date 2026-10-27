@@ -1,3 +1,4 @@
+import { MediaUpload } from "../../components/admin/MediaUpload";
 import { useEffect, useState } from "react";
 import {
   createCaseStudy,
@@ -18,6 +19,7 @@ const blank = {
   videoUrl: "",
   services: "",
   status: "draft",
+  isDemo: false,
 };
 
 export function CaseStudiesAdminPage() {
@@ -25,6 +27,8 @@ export function CaseStudiesAdminPage() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(blank);
   const [editingId, setEditingId] = useState(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const load = async () => {
     const [companyRows, caseRows] = await Promise.all([
@@ -36,33 +40,42 @@ export function CaseStudiesAdminPage() {
   };
 
   useEffect(() => {
-    load();
+    load().catch((e) => setError(e.message));
   }, []);
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    const payload = {
-      ...form,
-      services: form.services
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-    };
+    setError("");
+    setBusy(true);
+    try {
+      const payload = {
+        ...form,
+        services: form.services
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      };
 
-    if (editingId) {
-      await updateCaseStudy(editingId, payload);
-      setEditingId(null);
-    } else {
-      await createCaseStudy(payload);
+      if (editingId) {
+        await updateCaseStudy(editingId, payload);
+        setEditingId(null);
+      } else {
+        await createCaseStudy(payload);
+      }
+
+      setForm(blank);
+      await load();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
     }
-
-    setForm(blank);
-    await load();
   };
 
   const onEdit = (item) => {
     setEditingId(item.id);
     setForm({
+      isDemo: !!item.isDemo,
       companyId: item.companyId,
       name: item.name,
       result: item.result,
@@ -77,12 +90,23 @@ export function CaseStudiesAdminPage() {
   };
 
   const onDelete = async (id) => {
-    await deleteCaseStudy(id);
-    await load();
+    setError("");
+    try {
+      await deleteCaseStudy(id);
+      await load();
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   return (
     <section>
+      {error && (
+        <p role="alert" className="text-rose-400">
+          {error}
+        </p>
+      )}
+      {busy && <p role="status">Saving…</p>}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-heading text-3xl font-bold md:text-5xl xl:text-6xl">
@@ -142,8 +166,8 @@ export function CaseStudiesAdminPage() {
           ["name", "Case study title"],
           ["result", "Result headline"],
           ["services", "Services (comma-separated)"],
-          ["imageUrl", "Campaign image URL (HTTPS)"],
-          ["videoUrl", "Campaign video URL (MP4, HTTPS)"],
+          ["imageUrl", "Campaign image URL"],
+          ["videoUrl", "Campaign video URL (MP4/WebM)"],
         ].map(([key, label]) => (
           <label
             key={key}
@@ -154,8 +178,8 @@ export function CaseStudiesAdminPage() {
             </span>
             <input
               required={["name", "result"].includes(key)}
-              type={key.endsWith("Url") ? "url" : "text"}
-              pattern={key.endsWith("Url") ? "https://.*" : undefined}
+              type="text"
+
               value={form[key]}
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, [key]: event.target.value }))
@@ -165,6 +189,26 @@ export function CaseStudiesAdminPage() {
           </label>
         ))}
 
+        <MediaUpload
+          label="Upload campaign image"
+          accept="image/png,image/jpeg,image/webp"
+          onUploaded={(imageUrl) => setForm((f) => ({ ...f, imageUrl }))}
+        />
+        <MediaUpload
+          label="Upload campaign video"
+          accept="video/mp4,video/webm"
+          onUploaded={(videoUrl) => setForm((f) => ({ ...f, videoUrl }))}
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={form.isDemo}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, isDemo: e.target.checked }))
+            }
+          />{" "}
+          Label as demo/concept work
+        </label>
         <label className="md:col-span-2 xl:col-span-4">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
             Summary
@@ -199,6 +243,7 @@ export function CaseStudiesAdminPage() {
           <button
             className="rounded-xl bg-neon px-4 py-2 text-sm font-bold text-black"
             type="submit"
+            disabled={busy}
           >
             {editingId ? "Update case study" : "Add case study"}
           </button>

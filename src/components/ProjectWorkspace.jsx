@@ -1,3 +1,4 @@
+import { isMediaUrl } from "../api/media";
 import { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { AlienMark, Planet } from "./Planet";
@@ -33,10 +34,7 @@ export function useProjects() {
 
 export function ProjectArt({ project, variant = 0 }) {
   const [failedUrl, setFailedUrl] = useState(null);
-  if (
-    /^https:\/\//.test(project.imageUrl || "") &&
-    failedUrl !== project.imageUrl
-  )
+  if (isMediaUrl(project.imageUrl) && failedUrl !== project.imageUrl)
     return (
       <div className="project-art uploaded-art">
         <img
@@ -124,7 +122,9 @@ export function ProjectWorkspace({ compact = false }) {
     sector * positions.length,
     (sector + 1) * positions.length,
   );
-  const sampleMode = import.meta.env.VITE_USE_MOCK_DATA !== "false";
+  const sampleMode =
+    projects.some((p) => p.isDemo) ||
+    import.meta.env.VITE_USE_MOCK_DATA !== "false";
   const active = worlds.find((p) => p.id === hovered);
   function change(key, value) {
     if (key === "sector") {

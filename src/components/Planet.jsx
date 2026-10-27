@@ -1,3 +1,4 @@
+import { isMediaUrl } from "../api/media";
 import { useId, useState } from "react";
 
 const palettes = [
@@ -60,7 +61,7 @@ export function Planet({ variant = 0, imageUrl, className = "" }) {
           fill={`url(#${id}-base)`}
           filter={`url(#${id}-terrain)`}
         />
-        {!failed && /^https:\/\//.test(imageUrl || "") && (
+        {!failed && isMediaUrl(imageUrl) && (
           <image
             href={imageUrl}
             width="220"

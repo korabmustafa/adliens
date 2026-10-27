@@ -1,3 +1,5 @@
+import { getSettings } from "../api/endpoints";
+import { isMediaUrl } from "../api/media";
 import { useEffect, useRef, useState } from "react";
 import { WorldLink } from "../components/WorldLink";
 
@@ -11,8 +13,22 @@ export function HomePage() {
   const [reduced, setReduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
-  const videoUrl = import.meta.env.VITE_AGENCY_FILM_URL;
-  const hasFilm = /^https:\/\//.test(videoUrl || "") && !failed;
+  const [siteFilm, setSiteFilm] = useState(null);
+  useEffect(() => {
+    if (import.meta.env.VITE_USE_MOCK_DATA === "false") {
+      let active = true;
+      getSettings()
+        .then((s) => {
+          if (active) setSiteFilm(s.filmUrl);
+        })
+        .catch(() => {});
+      return () => {
+        active = false;
+      };
+    }
+  }, []);
+  const videoUrl = siteFilm ?? import.meta.env.VITE_AGENCY_FILM_URL;
+  const hasFilm = isMediaUrl(videoUrl) && !failed;
   useEffect(() => {
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";

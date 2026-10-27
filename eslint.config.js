@@ -2,7 +2,7 @@ import hooks from "eslint-plugin-react-hooks";
 export default [
   { ignores: ["dist/**", "node_modules/**"] },
   {
-    files: ["src/**/*.{js,jsx}"],
+    files: ["src/**/*.{js,jsx}", "server/**/*.js", "api/**/*.js"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
