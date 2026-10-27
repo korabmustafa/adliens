@@ -6,6 +6,7 @@ import { AuthProvider } from './admin/AuthProvider';
 import { ThemeProvider } from './components/ThemeProvider';
 import { LocaleProvider } from './i18n/LocaleProvider';
 import './styles.css';
+import './cosmos.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

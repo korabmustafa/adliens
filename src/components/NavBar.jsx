@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useTheme } from "./ThemeProvider";
 const items = [
-  ["/work", "The work"],
+  ["/work", "The universe"],
   ["/services", "Our expertise"],
   ["/about", "The agency"],
 ];
@@ -34,7 +34,7 @@ export function NavBar() {
           {theme === "dark" ? "◐" : "◑"}
         </button>
         <Link to="/contact" className="header-cta">
-          Let’s talk <span>↗</span>
+          Make contact <span>↗</span>
         </Link>
         <button
           className="menu-toggle"

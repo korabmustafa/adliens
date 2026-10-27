@@ -5,6 +5,8 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
+import { Planet } from "../components/Planet";
+import { WorldLink } from "../components/WorldLink";
 import { ProjectArt, useProjects } from "../components/ProjectWorkspace";
 export function ClientWorldPage() {
   const { clientId } = useParams();
@@ -52,17 +54,20 @@ export function ClientWorldPage() {
   return (
     <div className={`client-world world-${variant % 3}`}>
       <div className="client-breadcrumb">
-        <Link
+        <WorldLink
           to={location.state?.returnTo || "/work"}
           state={{ restoreScroll: location.state?.scrollY || 0 }}
         >
-          ← Adliens / Selected work
-        </Link>
+          ← Return to the Adliens universe
+        </WorldLink>
         <span>/ {selected.companyName}</span>
       </div>
       <header className="client-header">
+        <div className="world-horizon" aria-hidden="true">
+          <Planet variant={variant} imageUrl={selected.imageUrl} />
+        </div>
         <p className="eyebrow">
-          CLIENT WORLD / {String(variant + 1).padStart(2, "0")}
+          YOU HAVE ARRIVED / WORLD {String(variant + 1).padStart(2, "0")}
         </p>
         <h1>
           {selected.companyName}
@@ -112,7 +117,7 @@ export function ClientWorldPage() {
           </span>
         </button>
         <aside className="campaign-summary">
-          <p className="eyebrow">CAMPAIGN FILE</p>
+          <p className="eyebrow">MISSION ARCHIVE / CAMPAIGN</p>
           <h2>{selected.name}</h2>
           <p>{selected.summary}</p>
           <div className="result-block">
@@ -182,13 +187,13 @@ export function ClientWorldPage() {
           · {selected.companyName}
         </p>
       </dialog>
-      <Link
+      <WorldLink
         className="world-return"
         to={location.state?.returnTo || "/work"}
         state={{ restoreScroll: location.state?.scrollY || 0 }}
       >
-        ← Close this world. Explore the next.
-      </Link>
+        ← Leave orbit. Return to the universe.
+      </WorldLink>
     </div>
   );
 }

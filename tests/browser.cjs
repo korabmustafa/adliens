@@ -25,7 +25,13 @@ process.on("exit", () => server.kill());
   await page.locator(".project-folder").first().waitFor();
   await page.screenshot({ path: "test-results/desktop.png", fullPage: true });
   assert.equal(await page.locator(".project-folder").count(), 2);
-  await page.getByRole("link", { name: "Explore our work" }).click();
+  await page.getByRole("button", { name: "Pause motion" }).click();
+  assert.equal(
+    await page
+      .locator(".star-system")
+      .evaluate((e) => e.classList.contains("motion-paused")),
+    true,
+  );
   await page.locator(".project-folder").first().click();
   await page.locator(".campaign-summary").waitFor();
   await page.getByRole("button", { name: /Expand artwork/ }).click();
@@ -44,11 +50,7 @@ process.on("exit", () => server.kill());
   await page
     .getByRole("button", { name: "All projects", exact: false })
     .click();
-  assert.ok(
-    await page
-      .locator(".project-grid")
-      .evaluate((e) => e.classList.contains("list-view")),
-  );
+  assert.ok(await page.locator(".mission-index").isVisible());
   await page.getByRole("button", { name: "All work", exact: true }).click();
   assert.equal(await page.locator(".project-folder").count(), 2);
   for (const width of [390, 768, 1440]) {
@@ -78,7 +80,7 @@ process.on("exit", () => server.kill());
   await page.getByRole("button", { name: "Menu +" }).click();
   await page
     .locator(".mobile-nav")
-    .getByRole("link", { name: "The work" })
+    .getByRole("link", { name: "The universe" })
     .click();
   assert.equal(await page.locator(".mobile-nav").count(), 0);
   await page.getByRole("button", { name: /Switch to light/ }).click();
@@ -87,17 +89,51 @@ process.on("exit", () => server.kill());
     false,
   );
   await page.screenshot({ path: "test-results/light.png", fullPage: true });
+  await page.getByRole("button", { name: "Explore", exact: false }).click();
+  await page.locator(".client-planet").first().waitFor();
   await page.emulateMedia({ reducedMotion: "reduce" });
   assert.equal(
     await page
-      .locator(".folder-stage")
+      .locator(".client-planet")
       .first()
-      .evaluate((e) => getComputedStyle(e).transitionDuration),
-    "0s",
+      .evaluate((e) => getComputedStyle(e).animationName),
+    "none",
   );
+  // Exercise a collection larger than one orbital sector.
+  await page.evaluate(() => {
+    const db = JSON.parse(localStorage.getItem("adliens-admin-db-v1"));
+    for (let i = 0; i < 5; i++)
+      db.caseStudies.push({
+        ...db.caseStudies[0],
+        id: `test-${i}`,
+        companyId: `test-company-${i}`,
+        companyName: `Test world ${i}`,
+      });
+    localStorage.setItem("adliens-admin-db-v1", JSON.stringify(db));
+  });
+  await page.goto("http://127.0.0.1:5173/work");
+  await page.locator(".client-planet").first().waitFor();
+  assert.equal(await page.locator(".client-planet").count(), 4);
+  await page.getByRole("button", { name: "Next sector" }).click();
+  assert.equal(await page.locator(".client-planet").count(), 3);
+  await page.getByRole("button", { name: "Previous sector" }).click();
+  assert.equal(await page.locator(".client-planet").count(), 4);
+  await page.screenshot({
+    path: "test-results/mobile-dense.png",
+    fullPage: true,
+  });
+  await page.evaluate(() =>
+    localStorage.setItem("adliens-admin-db-v1", "{broken"),
+  );
+  await page.reload();
+  await page.getByRole("button", { name: "Reconnect" }).waitFor();
+  await page.evaluate(() => localStorage.removeItem("adliens-admin-db-v1"));
+  await page.getByRole("button", { name: "Reconnect" }).click();
+  await page.locator(".client-planet").first().waitFor();
+  assert.equal(await page.locator(".client-planet").count(), 2);
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: folders, deep links, dialog/Escape, filters, views, 18 responsive route checks, mobile menu, light theme, reduced motion; no runtime errors",
+    "PASS: planets, motion pause, deep links, dialog/Escape, filters, views, 18 responsive route checks, mobile menu, light theme, reduced motion, multi-sector collections, error recovery; no runtime errors",
   );
   await browser.close();
   server.kill();

@@ -2,9 +2,9 @@
 
 A React + Vite marketing agency portfolio centered on client work:
 
-- Animated client folders and dedicated client worlds
+- Interactive client planets around the Adliens mothership
 - Campaign artwork and video viewers
-- Explore/list views and service filters
+- Star-system exploration, campaign index, and service filters
 - Dark lime theme, light mode, and mobile navigation
 - Case study admin with local demo data and API integration scaffold
 
@@ -52,7 +52,7 @@ always rebuild after changing them. They are public browser configuration, not s
 
 ### Demo data and contact form
 
-Client folders and admin use sample data saved in **your browser's localStorage**.
+Client worlds and admin use sample data saved in **your browser's localStorage**.
 Try `/admin/login` with any email and nonempty password in this mock mode. This is
 only a frontend demo, not production authentication. Publish a case study in
 `/admin/work` to see it in the public workspace in the same browser.
@@ -84,14 +84,14 @@ Published case studies from admin are shown in public `/work`.
 
 ## Client universe redesign
 
-The public site now centers on published client work: animated folders, service filters,
+The public site now centers on published client work: an interactive star map, service filters,
 Explore / All Projects views, client worlds at `/work/:companyId`, and campaign links
-at `/work/:companyId?campaign=:caseStudyId`. Opening and closing a world preserves the
+at `/work/:companyId?campaign=:caseStudyId`. Entering and leaving a world preserves the
 workspace view and filters; the close link also restores its scroll position.
 
 Case studies can include `challenge`, `approach`, `imageUrl` (HTTPS image), and
 `videoUrl` (HTTPS MP4). These fields are editable in the case study admin. Images
-appear on folder covers and in the campaign viewer; videos use native playback
+appear on client planets and in the campaign viewer; videos use native playback
 controls with no autoplay. Without an image, the site shows concept artwork.
 The existing mock collection is explicitly labeled as demo content.
 
@@ -115,6 +115,19 @@ The redesign uses CSS artwork and animations rather than adding a 3D runtime.
 
 Run `npm run lint` and `npm run build`. For the browser smoke suite, run
 `npx playwright install chromium`, then `npm run test:browser`. It starts a local
-Vite server and covers folder navigation, direct campaign URLs, viewer dismissal,
+Vite server and covers planet navigation, direct campaign URLs, viewer dismissal,
 filters, view switching, all public routes at three widths, mobile navigation,
 theme switching, and reduced motion. Screenshots go to ignored `test-results/`.
+
+### Star-system experience
+
+The landing page is an interactive universe: Adliens at the center, with published
+clients represented as textured planets. Hover or keyboard-focus a planet to
+identify the work, then enter its case study. The All Projects index provides
+a direct route to each campaign. Collections over four clients split into sectors.
+
+Motion can be paused from the map and respects the system reduced-motion setting.
+Pointer parallax is mouse-only. Native View Transitions progressively enhance
+travel between worlds; ordinary links work on browsers without that API.
+The space scene stays dark in light mode to retain its visual identity.
+Planet textures are procedural SVG, with no external 3D library or image downloads.
