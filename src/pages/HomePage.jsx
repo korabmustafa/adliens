@@ -17,6 +17,12 @@ export function HomePage() {
   const [reduced, setReduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  // Choose the format once at entrance so rotation cannot restart the film.
+  const [portrait] = useState(
+    () =>
+      window.matchMedia("(max-width: 760px) and (orientation: portrait)")
+        .matches,
+  );
   const [siteFilm, setSiteFilm] = useState(null);
   useEffect(() => {
     if (import.meta.env.VITE_USE_MOCK_DATA === "false") {
@@ -31,11 +37,17 @@ export function HomePage() {
       };
     }
   }, []);
-  const videoUrl =
+  const configuredFilm =
     siteFilm || import.meta.env.VITE_AGENCY_FILM_URL || defaultFilm;
+  const mobileFilm = portrait && configuredFilm === defaultFilm;
+  const videoUrl = mobileFilm ? "/adliens-intro-mobile.mp4" : configuredFilm;
   const hasFilm = isMediaUrl(videoUrl) && !failed;
   const closingImage =
-    videoUrl === defaultFilm ? "/adliens-intro-end.webp" : undefined;
+    configuredFilm === defaultFilm
+      ? mobileFilm
+        ? "/adliens-intro-mobile-end.webp"
+        : "/adliens-intro-end.webp"
+      : undefined;
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -73,7 +85,9 @@ export function HomePage() {
     <main
       ref={entrance}
       tabIndex={-1}
-      className="cinema-entry"
+      className={`cinema-entry${mobileFilm ? " cinema-entry--portrait" : ""}`}
+      data-ended={ended}
+      data-film-format={mobileFilm ? "portrait" : "landscape"}
       aria-label="Welcome to Adliens"
     >
       <div className="cinema-screen">

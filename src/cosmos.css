@@ -2504,3 +2504,31 @@
     padding: 10px 12px;
   }
 }
+
+/* Portrait footage fills the phone viewport; controls occupy its safe lower margin. */
+.cinema-entry--portrait {
+  display: block;
+}
+.cinema-entry--portrait .cinema-screen {
+  height: 100%;
+}
+.cinema-entry--portrait .cinema-footer {
+  position: absolute;
+  inset: auto 0 0;
+  padding-top: 24px;
+  background: linear-gradient(transparent, #020604df);
+}
+.cinema-entry[data-ended="true"] .cinema-footer {
+  justify-content: center;
+}
+.cinema-entry[data-ended="true"] .cinema-enter-link {
+  justify-content: space-between;
+  min-width: min(280px, 82vw);
+  padding: 14px 22px;
+  border: 1px solid #c5ff3870;
+  border-radius: 40px;
+  background: #12200bd9;
+}
+.cinema-entry--portrait[data-ended="true"] .cinema-footer {
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+}
