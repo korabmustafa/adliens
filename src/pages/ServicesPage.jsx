@@ -1,55 +1,85 @@
-const serviceCards = [
-  {
-    title: 'Social Media Advertising',
-    text: 'Performance ad systems across Meta, TikTok, and Google with testing frameworks and creative iteration.',
-  },
-  {
-    title: 'Social Media Design',
-    text: 'Thumb-stopping social assets crafted for consistency, growth, and conversion.',
-  },
-  {
-    title: 'Brand Identity',
-    text: 'Distinct, memorable visual identity systems with strategy-driven execution.',
-  },
-  {
-    title: 'Motion Design',
-    text: 'High-impact motion graphics and short-form video assets tuned for paid and organic channels.',
-  },
-  {
-    title: 'Consulting',
-    text: 'Adliens strategy sessions for offer clarity, funnel optimization, and practical growth roadmaps.',
-  },
-  {
-    title: 'Creative Strategy',
-    text: 'Campaign concepts, audience hypotheses, and messaging frameworks that unify brand and conversion.',
-  },
+import { Link } from "react-router-dom";
+const services = [
+  [
+    "Social Media Advertising",
+    "The right message. The right moment.",
+    "Paid campaigns across Meta, TikTok, and Google. Creative testing and continuous refinement built around your goals.",
+    "Paid media / Testing / Optimization",
+  ],
+  [
+    "Social Media Design",
+    "Made to stop the scroll.",
+    "Distinctive social content that makes your brand recognizable, from the first impression to the next interaction.",
+    "Art direction / Content / Campaigns",
+  ],
+  [
+    "Brand Identity",
+    "A world only you could own.",
+    "Visual identities with a clear point of view. A connected system of typography, color, and design that tells your story.",
+    "Strategy / Identity / Guidelines",
+  ],
+  [
+    "Motion Design",
+    "Give your ideas a pulse.",
+    "Motion graphics and short-form storytelling that bring character and energy to your brand.",
+    "Animation / Short-form / Storytelling",
+  ],
+  [
+    "Consulting",
+    "A clearer direction forward.",
+    "Focused conversations about your audience, positioning, and next opportunity. Practical thinking you can put to work.",
+    "Discovery / Positioning / Roadmaps",
+  ],
+  [
+    "Creative Strategy",
+    "Good ideas need a direction.",
+    "Campaign concepts, audience insights, and messaging that connect what your brand stands for with what people care about.",
+    "Concepts / Messaging / Creative direction",
+  ],
 ];
-
 export function ServicesPage() {
   return (
-    <div className="mx-auto w-full max-w-[1500px] px-4 py-10 md:px-8 md:py-14 xl:px-12">
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr] xl:items-end">
-        <div>
-          <h1 className="font-heading text-4xl font-bold md:text-6xl xl:text-7xl">Services</h1>
-          <p className="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">
-            We combine creative direction and measurable ad performance into one coherent growth engine.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-300 p-5 dark:border-neon/25">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Engagement model</p>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            Flexible retainers, growth sprints, or focused advisory. Built for startup speed and enterprise rigor.
-          </p>
-        </div>
-      </div>
-
-      <section className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {serviceCards.map((item) => (
-          <article key={item.title} className="rounded-2xl border border-slate-300 p-6 dark:border-neon/25">
-            <h2 className="font-heading text-2xl font-semibold text-neon">{item.title}</h2>
-            <p className="mt-2 text-slate-700 dark:text-slate-300">{item.text}</p>
+    <div className="universe-page">
+      <header className="page-intro">
+        <p className="eyebrow">THE CREATIVE TOOLBOX</p>
+        <h1>
+          Built to make
+          <br />
+          <em>an impact.</em>
+        </h1>
+        <p>
+          One agency. Connected disciplines. Everything your next chapter needs.
+        </p>
+      </header>
+      <section className="service-list">
+        {services.map(([title, subtitle, text, tags], i) => (
+          <article key={title}>
+            <span className="service-number">0{i + 1}</span>
+            <div>
+              <p className="eyebrow">{title}</p>
+              <h2>{subtitle}</h2>
+              <p>{text}</p>
+              <small>{tags}</small>
+            </div>
+            <Link
+              to={`/contact?service=${encodeURIComponent(title)}`}
+              aria-label={`Discuss ${title}`}
+            >
+              ↗
+            </Link>
           </article>
         ))}
+      </section>
+      <section className="contact-banner">
+        <p className="eyebrow">LET’S CONNECT THE DOTS</p>
+        <h2>
+          Your ambition.
+          <br />
+          <em>Our next project.</em>
+        </h2>
+        <Link className="primary-button" to="/contact">
+          Open a conversation ↗
+        </Link>
       </section>
     </div>
   );

@@ -1,0 +1,17 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        VITE_AGENCY_FILM_URL: "${VITE_AGENCY_FILM_URL:-}"
+        VITE_USE_MOCK_DATA: "${VITE_USE_MOCK_DATA:-true}"
+        VITE_API_BASE_URL: "${VITE_API_BASE_URL:-http://localhost:3000/api}"
+    ports:
+      - "127.0.0.1:${ADLIENS_PORT:-8080}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

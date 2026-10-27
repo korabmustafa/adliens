@@ -1,38 +1,70 @@
+import { Link } from "react-router-dom";
 export function AboutPage() {
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-4 py-10 md:px-8 md:py-14 xl:px-12">
-      <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
-        <section>
-          <h1 className="font-heading text-4xl font-bold md:text-6xl xl:text-7xl">About Adliens</h1>
-          <p className="mt-5 text-lg text-slate-700 dark:text-slate-300">
-            Adliens is a modern marketing agency focused on one mission: elevate brands into high-performing,
-            category-defining businesses.
+    <div className="universe-page">
+      <header className="page-intro">
+        <p className="eyebrow">THE AGENCY BEHIND THE WORLDS</p>
+        <h1>
+          Different minds.
+          <br />
+          <em>Shared ambition.</em>
+        </h1>
+        <p>
+          We’re Adliens. A creative marketing agency bringing strategy, design,
+          motion, and paid media into the same orbit.
+        </p>
+      </header>
+      <section className="agency-manifesto">
+        <span className="manifesto-star" aria-hidden="true">
+          ✳
+        </span>
+        <div>
+          <p className="eyebrow">OUR POINT OF VIEW</p>
+          <h2>
+            Build a brand people
+            <br />
+            want to <em>step into.</em>
+          </h2>
+          <p>
+            Every brand has its own world. We help make it visible—with a clear
+            identity, considered creative work, and campaigns that move people.
           </p>
-          <p className="mt-4 text-slate-700 dark:text-slate-300">
-            Our team blends creative strategy, visual identity, motion storytelling, and paid media execution. The result
-            is a single creative-performance system that feels premium and delivers measurable outcomes.
+          <p>
+            Our portfolio is a collection of those collaborations. Different
+            clients, different challenges, one commitment to work with purpose.
           </p>
-        </section>
-
-        <aside className="rounded-2xl border border-slate-300 p-6 dark:border-neon/25">
-          <h2 className="font-heading text-2xl text-neon">Why clients choose us</h2>
-          <ul className="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-300">
-            <li>• Strategy + execution in one integrated team</li>
-            <li>• High-speed testing with transparent reporting</li>
-            <li>• Brand quality without sacrificing performance</li>
-            <li>• Senior-level partnership and clear communication</li>
-          </ul>
-        </aside>
-      </div>
-
-      <section className="mt-8 rounded-2xl border border-slate-300 p-6 dark:border-neon/25">
-        <h2 className="font-heading text-2xl text-neon">How We Work</h2>
-        <ol className="mt-3 grid gap-2 pl-5 text-slate-700 dark:text-slate-300 md:grid-cols-2">
-          <li>Discovery & brand immersion</li>
-          <li>Creative strategy and concepting</li>
-          <li>Campaign and design execution</li>
-          <li>Weekly optimization and transparent reporting</li>
-        </ol>
+          <Link className="text-link" to="/work">
+            Explore the work ↗
+          </Link>
+        </div>
+      </section>
+      <section className="process-section">
+        <p className="eyebrow">HOW WE GET THERE</p>
+        <div className="case-story">
+          {[
+            [
+              "01",
+              "Discover",
+              "Understand the brand, its audience, and what comes next.",
+            ],
+            [
+              "02",
+              "Create",
+              "Turn a clear direction into a distinctive creative world.",
+            ],
+            [
+              "03",
+              "Evolve",
+              "Launch, learn, and keep making the work stronger.",
+            ],
+          ].map(([n, title, text]) => (
+            <article key={n}>
+              <small>{n}</small>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
       </section>
     </div>
   );

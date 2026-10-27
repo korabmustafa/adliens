@@ -1,49 +1,70 @@
-import { NavLink } from 'react-router-dom';
-import { LampThemeToggle } from './LampThemeToggle';
-import { useLocale } from '../i18n/LocaleProvider';
-
-const navItems = [
-  ['/', 'Home'],
-  ['/services', 'Services'],
-  ['/work', 'Work'],
-  ['/about', 'About'],
-  ['/contact', 'Contact'],
+import { useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { useTheme } from "./ThemeProvider";
+const items = [
+  ["/work", "The universe"],
+  ["/services", "Our expertise"],
+  ["/about", "The agency"],
 ];
-
 export function NavBar() {
-  const { t } = useLocale();
-
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const { theme, toggleTheme } = useTheme();
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-300/50 bg-mist/90 backdrop-blur dark:border-neon/20 dark:bg-ink/80">
-      <div className="mx-auto flex w-full max-w-[1500px] items-center justify-between px-4 py-3 md:px-8 xl:px-12">
-        <NavLink to="/" className="font-heading text-xl font-bold tracking-tight md:text-2xl">
-          {t.brand} <span className="text-neon">agency</span>
-        </NavLink>
-
-        <nav className="hidden gap-8 text-sm font-semibold lg:flex">
-          {navItems.map(([to, label]) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `transition ${isActive ? 'text-neon' : 'text-slate-700 hover:text-neon dark:text-slate-200'}`
-              }
-            >
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <LampThemeToggle />
-          <NavLink
-            to="/contact"
-            className="rounded-full border border-neon bg-neon px-4 py-2 text-sm font-bold uppercase tracking-wide text-black transition hover:translate-y-px"
-          >
-            {t.cta}
+    <header className="site-header">
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
+      <Link to="/" className="wordmark" aria-label="Adliens home">
+        adliens<span>✳</span>
+      </Link>
+      <nav className="desktop-nav" aria-label="Main navigation">
+        {items.map(([to, label]) => (
+          <NavLink key={to} to={to}>
+            {label}
           </NavLink>
-        </div>
+        ))}
+      </nav>
+      <div className="header-actions">
+        <button
+          className="theme-button"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          {theme === "dark" ? "◐" : "◑"}
+        </button>
+        <Link to="/contact" className="header-cta">
+          Make contact <span>↗</span>
+        </Link>
+        <button
+          className="menu-toggle"
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
+          onClick={() => setOpen(!open)}
+        >
+          {open ? "Close −" : "Menu +"}
+        </button>
       </div>
+      {open && (
+        <nav
+          id="mobile-navigation"
+          className="mobile-nav"
+          aria-label="Mobile navigation"
+        >
+          {[["/", "Home"], ...items, ["/contact", "Start a project"]].map(
+            ([to, label]) => (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={() => setOpen(false)}
+                aria-current={pathname === to ? "page" : undefined}
+              >
+                {label} <span>↗</span>
+              </NavLink>
+            ),
+          )}
+        </nav>
+      )}
     </header>
   );
 }
