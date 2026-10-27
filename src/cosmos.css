@@ -2397,14 +2397,13 @@
     font-size: 8px;
   }
 }
-/* A contained film: keep every frame visible, including in portrait. */
+/* Matching film compositions fill the viewport with controls over the footage. */
 .cinema-entry {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100dvh;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  display: block;
   background: #020604;
   color: #e8f0e3;
   isolation: isolate;
@@ -2412,8 +2411,8 @@
   outline: none;
 }
 .cinema-screen {
-  position: relative;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
 }
 .cinema-film,
@@ -2423,7 +2422,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 .cinema-closing {
@@ -2442,6 +2441,10 @@
   color: #c5ff38;
 }
 .cinema-footer {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  background: linear-gradient(transparent, #020604df);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2505,19 +2508,6 @@
   }
 }
 
-/* Portrait footage fills the phone viewport; controls occupy its safe lower margin. */
-.cinema-entry--portrait {
-  display: block;
-}
-.cinema-entry--portrait .cinema-screen {
-  height: 100%;
-}
-.cinema-entry--portrait .cinema-footer {
-  position: absolute;
-  inset: auto 0 0;
-  padding-top: 24px;
-  background: linear-gradient(transparent, #020604df);
-}
 .cinema-entry[data-ended="true"] .cinema-footer {
   justify-content: center;
 }
@@ -2529,6 +2519,8 @@
   border-radius: 40px;
   background: #12200bd9;
 }
-.cinema-entry--portrait[data-ended="true"] .cinema-footer {
-  padding-bottom: max(32px, env(safe-area-inset-bottom));
+@media (max-width: 760px) and (orientation: portrait) {
+  .cinema-entry[data-ended="true"] .cinema-footer {
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
 }

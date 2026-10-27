@@ -91,6 +91,11 @@ Never run setup or migrations against an unrelated project database.
 
 ## Film and media
 
+The bundled entrance uses matching colorful landscape and portrait films, selected
+by viewport orientation. Both fill the viewport with overlaid controls; resizing
+preserves the playback position and sound preference. To regenerate the assets,
+run `python scripts/color-landscape-intro.py` (requires numpy and ffmpeg).
+
 The introduction film can be uploaded or linked from `/admin/settings`; saving
 it publishes it to the entrance. Native playback controls support pause and sound;
 reduced-motion visitors start playback manually. Without a film, the entrance

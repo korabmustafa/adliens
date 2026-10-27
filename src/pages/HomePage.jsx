@@ -3,12 +3,17 @@ import { isMediaUrl } from "../api/media";
 import { useEffect, useRef, useState } from "react";
 import { WorldLink } from "../components/WorldLink";
 
-const defaultFilm = "/adliens-intro%20(2).mp4";
+// Matching landscape and portrait films share the same planet palette and timing.
+const defaultFilm = "/adliens-intro-landscape.mp4";
 
 // Play the entrance once; leave the film's own closing identity on screen.
 export function HomePage() {
   const film = useRef(null);
   const entrance = useRef(null);
+  const resume = useRef(null);
+  const [portrait, setPortrait] = useState(
+    () => window.matchMedia("(max-aspect-ratio: 1/1)").matches,
+  );
   const [failed, setFailed] = useState(false);
   const [muted, setMuted] = useState(true);
   const [playing, setPlaying] = useState(false);
@@ -16,12 +21,6 @@ export function HomePage() {
   const [blocked, setBlocked] = useState(false);
   const [reduced, setReduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-  // Choose the format once at entrance so rotation cannot restart the film.
-  const [portrait] = useState(
-    () =>
-      window.matchMedia("(max-width: 760px) and (orientation: portrait)")
-        .matches,
   );
   const [siteFilm, setSiteFilm] = useState(null);
   useEffect(() => {
@@ -39,15 +38,37 @@ export function HomePage() {
   }, []);
   const configuredFilm =
     siteFilm || import.meta.env.VITE_AGENCY_FILM_URL || defaultFilm;
-  const mobileFilm = portrait && configuredFilm === defaultFilm;
-  const videoUrl = mobileFilm ? "/adliens-intro-mobile.mp4" : configuredFilm;
+  const bundledFilm = [
+    defaultFilm,
+    "/adliens-intro%20(2).mp4",
+    "/adliens-intro (2).mp4",
+    "/adliens-intro-mobile.mp4",
+    "/adliens-intro-portrait.mp4",
+  ].includes(configuredFilm);
+  const videoUrl =
+    bundledFilm && portrait
+      ? "/adliens-intro-portrait.mp4"
+      : bundledFilm
+        ? defaultFilm
+        : configuredFilm;
   const hasFilm = isMediaUrl(videoUrl) && !failed;
-  const closingImage =
-    configuredFilm === defaultFilm
-      ? mobileFilm
-        ? "/adliens-intro-mobile-end.webp"
-        : "/adliens-intro-end.webp"
-      : undefined;
+  const closingImage = bundledFilm
+    ? portrait
+      ? "/adliens-intro-portrait-end.webp"
+      : "/adliens-intro-landscape-end.webp"
+    : undefined;
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-aspect-ratio: 1/1)");
+    const change = () => {
+      const video = film.current;
+      if (video)
+        resume.current = { time: video.currentTime, paused: video.paused };
+      setPortrait(query.matches);
+    };
+    query.addEventListener("change", change);
+    return () => query.removeEventListener("change", change);
+  }, []);
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -67,10 +88,9 @@ export function HomePage() {
 
   useEffect(() => {
     const video = film.current;
-    if (!video || reduced) return;
-    // Set both properties before play() for inline muted playback on iOS.
+    if (!video || reduced || resume.current?.paused) return;
+    // Muted inline autoplay is enabled initially; preserve user sound settings.
     video.defaultMuted = true;
-    video.muted = true;
     video.play().catch(() => setBlocked(true));
   }, [videoUrl, hasFilm, reduced]);
 
@@ -85,9 +105,9 @@ export function HomePage() {
     <main
       ref={entrance}
       tabIndex={-1}
-      className={`cinema-entry${mobileFilm ? " cinema-entry--portrait" : ""}`}
+      className="cinema-entry"
       data-ended={ended}
-      data-film-format={mobileFilm ? "portrait" : "landscape"}
+      data-film-format={portrait ? "portrait" : "landscape"}
       aria-label="Welcome to Adliens"
     >
       <div className="cinema-screen">
@@ -102,6 +122,16 @@ export function HomePage() {
             playsInline
             preload="auto"
             aria-label="Adliens introduction film"
+            onLoadedMetadata={() => {
+              const previous = resume.current;
+              if (!previous) return;
+              film.current.currentTime = Math.min(
+                previous.time,
+                film.current.duration,
+              );
+              if (previous.paused) film.current.pause();
+              resume.current = null;
+            }}
             onError={() => setFailed(true)}
             onPlay={() => {
               setPlaying(true);
