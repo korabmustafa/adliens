@@ -1,32 +1,35 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const ThemeContext = createContext({
-  theme: 'dark',
+  theme: "dark",
   toggleTheme: () => {},
 });
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    const stored = localStorage.getItem('adliens-theme');
+    const stored = localStorage.getItem("adliens-theme");
     if (stored) return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return "dark";
   });
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem('adliens-theme', theme);
+    root.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("adliens-theme", theme);
   }, [theme]);
 
   const value = useMemo(
     () => ({
       theme,
-      toggleTheme: () => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark')),
+      toggleTheme: () =>
+        setTheme((prev) => (prev === "dark" ? "light" : "dark")),
     }),
     [theme],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {

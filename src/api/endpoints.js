@@ -11,7 +11,7 @@ import {
   updateCompany as mockUpdateCompany,
 } from '../mock/adminStore';
 
-const useMock = () => import.meta.env.VITE_USE_MOCK_DATA !== 'false';
+const isMockData = () => import.meta.env.VITE_USE_MOCK_DATA !== 'false';
 
 export function createLead(payload) {
   return apiRequest('/leads', {
@@ -21,7 +21,7 @@ export function createLead(payload) {
 }
 
 export function loginAdmin(payload) {
-  if (useMock()) return mockLogin(payload);
+  if (isMockData()) return mockLogin(payload);
   return apiRequest('/auth/login', {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -29,12 +29,12 @@ export function loginAdmin(payload) {
 }
 
 export function getCompanies() {
-  if (useMock()) return mockListCompanies();
+  if (isMockData()) return mockListCompanies();
   return apiRequest('/admin/companies');
 }
 
 export function createCompany(payload) {
-  if (useMock()) return mockCreateCompany(payload);
+  if (isMockData()) return mockCreateCompany(payload);
   return apiRequest('/admin/companies', {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -42,7 +42,7 @@ export function createCompany(payload) {
 }
 
 export function updateCompany(id, payload) {
-  if (useMock()) return mockUpdateCompany(id, payload);
+  if (isMockData()) return mockUpdateCompany(id, payload);
   return apiRequest(`/admin/companies/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
@@ -50,18 +50,18 @@ export function updateCompany(id, payload) {
 }
 
 export function deleteCompany(id) {
-  if (useMock()) return mockDeleteCompany(id);
+  if (isMockData()) return mockDeleteCompany(id);
   return apiRequest(`/admin/companies/${id}`, { method: 'DELETE' });
 }
 
 export function getCaseStudies({ publishedOnly = false } = {}) {
-  if (useMock()) return mockListCaseStudies({ publishedOnly });
+  if (isMockData()) return mockListCaseStudies({ publishedOnly });
   const path = publishedOnly ? '/case-studies?status=published' : '/admin/case-studies';
   return apiRequest(path);
 }
 
 export function createCaseStudy(payload) {
-  if (useMock()) return mockCreateCaseStudy(payload);
+  if (isMockData()) return mockCreateCaseStudy(payload);
   return apiRequest('/admin/case-studies', {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -69,7 +69,7 @@ export function createCaseStudy(payload) {
 }
 
 export function updateCaseStudy(id, payload) {
-  if (useMock()) return mockUpdateCaseStudy(id, payload);
+  if (isMockData()) return mockUpdateCaseStudy(id, payload);
   return apiRequest(`/admin/case-studies/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
@@ -77,6 +77,6 @@ export function updateCaseStudy(id, payload) {
 }
 
 export function deleteCaseStudy(id) {
-  if (useMock()) return mockDeleteCaseStudy(id);
+  if (isMockData()) return mockDeleteCaseStudy(id);
   return apiRequest(`/admin/case-studies/${id}`, { method: 'DELETE' });
 }

@@ -1,7 +1,20 @@
+import { Link } from "react-router-dom";
 export function Footer() {
   return (
-    <footer className="border-t border-slate-300/40 px-4 py-8 text-center text-sm text-slate-600 dark:border-neon/15 dark:text-slate-400">
-      © {new Date().getFullYear()} Adliens Agency — Built for a new dimension of marketing performance.
+    <footer className="site-footer">
+      <Link to="/" className="wordmark">
+        adliens<span>✳</span>
+      </Link>
+      <p>
+        Independent thinking.
+        <br />
+        Otherworldly work.
+      </p>
+      <div>
+        <Link to="/work">Selected work ↗</Link>
+        <Link to="/contact">Start a conversation ↗</Link>
+      </div>
+      <small>© {new Date().getFullYear()} ADLIENS AGENCY</small>
     </footer>
   );
 }
